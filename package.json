@@ -1,10 +1,17 @@
 {
+  "name": "michi-charts",
+  "version": "0.0.1",
+  "author": "wildnessy",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",
   "devDependencies": {
     "@babel/core": "^7.14.2",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.14",
     "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@storybook/addon-actions": "^6.2.9",
@@ -15,6 +22,8 @@
     "@types/d3-time-format": "^3.0.0",
     "@types/react": "^17.0.5",
     "@types/styled-components": "^5.1.9",
+    "@typescript-eslint/eslint-plugin": "^4.23.0",
+    "@typescript-eslint/parser": "^4.23.0",
     "@visx/axis": "^1.10.0",
     "@visx/curve": "^1.7.0",
     "@visx/event": "^1.7.0",
@@ -22,6 +31,7 @@
     "@visx/grid": "^1.9.1",
     "@visx/group": "^1.7.0",
     "@visx/mock-data": "^1.7.0",
+    "@visx/pattern": "^1.7.0",
     "@visx/scale": "^1.7.0",
     "@visx/shape": "^1.8.0",
     "@visx/tooltip": "^1.7.2",
@@ -29,9 +39,17 @@
     "babel-loader": "^8.2.2",
     "d3-selection": "^2.0.0",
     "d3-time-format": "^3.0.0",
+    "eslint": "^7.26.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "lodash": "^4.17.21",
     "postcss": "^8.2.15",
+    "prettier": "^2.3.0",
     "react": "^17.0.2",
+    "react-checkbox-tree": "^1.6.0",
     "react-dom": "^17.0.2",
+    "react-remove-scroll-bar": "^2.2.0",
+    "react-spring": "^9.1.2",
     "rollup": "^2.48.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.0",
@@ -47,7 +65,13 @@
   "scripts": {
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "directories": {
+    "lib": "lib"
+  },
+  "license": "ISC",
+  "description": ""
 }

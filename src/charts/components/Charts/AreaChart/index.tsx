@@ -11,6 +11,7 @@ import { localPoint } from '@visx/event';
 import { defaultConfig } from '../../../helpers';
 import { Label, TickPlain, TickYear } from '../../Axes';
 import Tooltip, { ITooltipTrendProps } from '../../Tooltips/TooltipTrend';
+import { extent } from 'd3-array';
 
 const Styled = styled.div`
   contain: layout;
@@ -50,7 +51,7 @@ const DataPoint = styled.circle`
 
 let tooltipTimeout: number;
 
-interface IAreaChartProps {
+export interface AreaChartProps {
   seriesData: Record<string, any>[];
   className: string;
   width: number;
@@ -73,7 +74,7 @@ interface IAreaChartProps {
   colors: Record<string, any[]>;
 }
 
-const AreaChart: FC<IAreaChartProps> = ({
+export const AreaChart: FC<AreaChartProps> = ({
   className = '',
   width = 900,
   height = 500,
@@ -90,7 +91,7 @@ const AreaChart: FC<IAreaChartProps> = ({
   },
   tooltip = null,
   tooltipDefaultStyle = true,
-  dataKeys = ['Processed', 'Raw', 'Semi-processed'],
+  dataKeys = [],
   colors = {},
 }) => {
   const config = {
@@ -114,10 +115,18 @@ const AreaChart: FC<IAreaChartProps> = ({
   });
 
   const getDate = (d) => d.data.date;
-  const getY0 = (d) => d[0] / 100;
-  const getY1 = (d) => d[1] / 100;
+  const getY0 = (d) => d[0] ;
+  const getY1 = (d) => d[1] ;
   const xAxisValues = seriesData.map((d) => d.date);
-
+  const yAxisValues = seriesData
+    .map(d => {
+      const temp = {...d};
+      delete temp.date;
+      return Object.values(temp);
+    })
+  .reduce((r, cur) => [...r, ...cur], []);
+  
+  
   const highlightArea = (e, key) => {
     const parentNode: HTMLElement = e.target.parentNode as HTMLElement;
     const areas: NodeListOf<SVGPathElement> = parentNode.querySelectorAll(
@@ -167,6 +176,7 @@ const AreaChart: FC<IAreaChartProps> = ({
   });
 
   const yScale = scaleLinear<number>({
+    domain: extent(domainAxisY || yAxisValues),
     zero: true,
     nice: true,
     clamp: true,
@@ -217,7 +227,7 @@ const AreaChart: FC<IAreaChartProps> = ({
             hideTicks
             tickComponent={TickPlain}
             tickFormat={(v: any) =>
-              tickFormat.value.replace('{v}', String(v * 100))
+              tickFormat.value.replace('{v}', String(v))
             }
           />
         )}
@@ -249,6 +259,7 @@ const AreaChart: FC<IAreaChartProps> = ({
         />
         <g>
           <AreaStack
+
             curve={curveMonotoneX}
             top={config.padding.top}
             left={config.padding.left}
@@ -337,5 +348,3 @@ const AreaChart: FC<IAreaChartProps> = ({
     </Styled>
   );
 };
-
-export default AreaChart;

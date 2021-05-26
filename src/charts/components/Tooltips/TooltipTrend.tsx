@@ -1,6 +1,6 @@
 import React, { FC, useContext } from 'react';
 import { timeFormat } from 'd3-time-format';
-import { ThemeContext } from '../../../themes/default';
+import { ThemeContext } from '../../../themes/primary';
 import {
   DateFormatted,
   Difference,
@@ -30,7 +30,7 @@ const TooltipTrend: FC<ITooltipTrendProps> = ({
     return (
       <Trend trend={trendValue >= 0 ? 'upward' : 'download'}>
         <span className="vl">
-          {tickFormat.value !== '' &&
+          {tickFormat.value !== '' && trendValue &&
             tickFormat.value.replace('{v}', trendValue.toFixed(2))}
         </span>
         <span className="arrow">
@@ -68,12 +68,12 @@ const TooltipTrend: FC<ITooltipTrendProps> = ({
           {timeFormat(tickFormat.date)(new Date(`${closestData.date}`))}
         </DateFormatted>
         <Value style={{ fontSize: 16 }}>
-          {tickFormat.value &&
+          {tickFormat.value && closestData.value &&
             tickFormat.value.replace(
               '{v}',
               parseFloat(closestData.value).toFixed(2)
             )}
-          {tickFormat.value === '' && (
+          {tickFormat.value === '' && closestData.value && (
             <>{parseFloat(closestData.value).toFixed(2)}</>
           )}
         </Value>
@@ -87,8 +87,8 @@ const TooltipTrend: FC<ITooltipTrendProps> = ({
   return (
     <TooltipStyled style={{ ...cssVars }}>
       <Value>
-        {tickFormat.value && tickFormat.value.replace('{v}', value.toFixed(2))}
-        {tickFormat.value === '' && <>{value.toFixed(2)}</>}
+        {tickFormat.value && value && tickFormat.value.replace('{v}', value.toFixed(2))}
+        {tickFormat.value === '' && value && <>{value.toFixed(2)}</>}
       </Value>
       <Label>{label}</Label>
       <DateFormatted>

@@ -1,6 +1,6 @@
 import React, { FC, useRef } from 'react';
 import { LinePath } from '@visx/shape';
-import { curveMonotoneX } from '@visx/curve';
+import { curveMonotoneX, curveNatural } from '@visx/curve';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { GridRows } from '@visx/grid';
@@ -17,6 +17,29 @@ import { defaultConfig } from '../../../helpers';
 export interface DateValue {
   date: Date | string;
   value: number;
+}
+
+export interface LineChartProps {
+  className: string;
+  series: any[];
+  tickFormat: { value: string; date: string };
+  title: string | React.ReactNode;
+  width: number;
+  height: number;
+  padding: {
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+  } | null;
+  colors: string[] | null;
+  domainAxisX: number[] | null;
+  domainAxisY: number[] | null;
+  showAxisX: boolean;
+  showAxisY: boolean;
+  stretching: boolean;
+  minifyAxisX: boolean;
+  minifyAxisY: boolean;
 }
 
 const Styled = styled.div`
@@ -62,28 +85,7 @@ const DataGroup = styled.g`
 
 let tooltipTimeout: number;
 
-const LineChart: FC<{
-  className: string;
-  series: any[];
-  tickFormat: { value: string; date: string };
-  title: string | React.ReactNode;
-  width: number;
-  height: number;
-  padding: {
-    top?: number;
-    right?: number;
-    bottom?: number;
-    left?: number;
-  } | null;
-  colors: string[] | null;
-  domainAxisX: number[] | null;
-  domainAxisY: number[] | null;
-  showAxisX: boolean;
-  showAxisY: boolean;
-  stretching: boolean;
-  minifyAxisX: boolean;
-  minifyAxisY: boolean;
-}> = ({
+export const LineChart: FC<LineChartProps> = ({
   className = '',
   series = [],
   tickFormat = defaultConfig.tickFormat,
@@ -270,7 +272,7 @@ const LineChart: FC<{
                   // @ts-ignore
                   x={(d) => xScale(getX(d)) + xScale.bandwidth() / 2}
                   y={(d) => yScale(getY(d) ?? 0)}
-                  curve={curveMonotoneX}
+                  curve={curveNatural}
                   stroke={colors !== null ? colors[label] : colorsDefault[i]}
                   strokeWidth={3}
                   strokeLinecap="square"
@@ -345,5 +347,3 @@ const LineChart: FC<{
     </Styled>
   );
 };
-
-export default LineChart;

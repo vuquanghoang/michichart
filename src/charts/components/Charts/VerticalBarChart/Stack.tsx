@@ -74,6 +74,7 @@ const Stack: ({
               top += h;
               return (
                 <div
+                  key={`sd-${i}`}
                   style={{
                     height: h - 1,
                     backgroundColor: colors[k] || colorsDefault[i],

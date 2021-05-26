@@ -1,0 +1,44 @@
+[
+  {
+    "label": "SADC",
+    "valueHighlight": 130,
+    "valueRemaining": 70,
+    "valueTotal": 200,
+    "color": "red"
+  },
+  {
+    "label": "COMESA",
+    "valueHighlight": 130,
+    "valueRemaining": 70,
+    "valueTotal": 200,
+    "color": "pink"
+  },
+  {
+    "label": "CENSAD",
+    "valueHighlight": 0,
+    "valueRemaining": 50,
+    "valueTotal": 50,
+    "color": "orange"
+  },
+  {
+    "label": "EAC",
+    "valueHighlight": 70,
+    "valueRemaining": 30,
+    "valueTotal": 100,
+    "color": "violet"
+  },
+  {
+    "label": "IGAD",
+    "valueHighlight": 90,
+    "valueRemaining": 10,
+    "valueTotal": 100,
+    "color": "green"
+  },
+  {
+    "label": "ECCAS",
+    "valueHighlight": 130,
+    "valueRemaining": 70,
+    "valueTotal": 200,
+    "color": "blue"
+  }
+]

@@ -14,7 +14,27 @@ import { defaultConfig } from '../../../helpers';
 
 let tooltipTimeout: number;
 
-const VerticalBarChart: FC<{
+export interface VerticalBarChartProps {
+  series: any[];
+  seriesTotal: any[];
+  tickFormat: { value: string; date: string };
+  title: string | React.ReactNode;
+  width: number;
+  height: number;
+  colors: any | null;
+  padding: {
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+  } | null;
+  domainAxisX: number[] | null;
+  domainAxisY: number[] | null;
+  showAxisX: boolean;
+  showAxisY: boolean;
+};
+
+export const VerticalBarChart: FC<{
   series: any[];
   seriesTotal: any[];
   tickFormat: { value: string; date: string };
@@ -268,4 +288,3 @@ const VerticalBarChart: FC<{
   );
 };
 
-export default VerticalBarChart;

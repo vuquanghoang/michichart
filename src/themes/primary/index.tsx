@@ -20,7 +20,7 @@ export const ThemeContext = React.createContext<
   }>
 >({});
 
-const DefaultTheme: FC<{
+const PrimaryTheme: FC<{
   cssVars?: Record<string, unknown> | undefined;
   children: ReactNode;
 }> = ({ cssVars, children }) => {
@@ -36,4 +36,4 @@ const DefaultTheme: FC<{
   );
 };
 
-export default DefaultTheme;
+export default PrimaryTheme;

@@ -44,7 +44,7 @@ interface IData {
 
 let tooltipTimeout: number;
 
-interface IScatterPlotChartProps {
+export interface ScatterPlotChartProps {
   className: string;
   seriesData: IData[];
   width: number;
@@ -67,7 +67,7 @@ interface IScatterPlotChartProps {
   tooltipDefaultStyle: boolean;
 }
 
-const ScatterPlotChart: FC<IScatterPlotChartProps> = ({
+export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
   className = '',
   width = 900,
   height = 500,
@@ -80,8 +80,8 @@ const ScatterPlotChart: FC<IScatterPlotChartProps> = ({
   },
   domainAxisY = null,
   domainAxisX = null,
-  axisYLbl = 'Preferential margin',
-  axisXLbl = 'Utilization rate',
+  axisYLbl = '',
+  axisXLbl = '',
   legendTitle = null,
   showAxisX = true,
   showAxisY = true,
@@ -286,5 +286,3 @@ const ScatterPlotChart: FC<IScatterPlotChartProps> = ({
     </Styled>
   );
 };
-
-export default ScatterPlotChart;
