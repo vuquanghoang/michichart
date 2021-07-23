@@ -4,6 +4,8 @@ export const defaultConfig = {
   tickFormat: {
     value: '',
     date: '%Y',
+    scale: '',
+    currency: '',
   },
   padding: {
     top: 50,

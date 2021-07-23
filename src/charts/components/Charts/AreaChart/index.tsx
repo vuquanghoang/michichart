@@ -100,14 +100,8 @@ export const AreaChart: FC<AreaChartProps> = ({
       ...padding,
     },
   };
-  const {
-    tooltipOpen,
-    tooltipLeft,
-    tooltipTop,
-    tooltipData,
-    hideTooltip,
-    showTooltip,
-  } = useTooltip<ITooltipTrendProps>();
+  const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
+    useTooltip<ITooltipTrendProps>();
 
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
@@ -115,26 +109,21 @@ export const AreaChart: FC<AreaChartProps> = ({
   });
 
   const getDate = (d) => d.data.date;
-  const getY0 = (d) => d[0] ;
-  const getY1 = (d) => d[1] ;
+  const getY0 = (d) => d[0];
+  const getY1 = (d) => d[1];
   const xAxisValues = seriesData.map((d) => d.date);
   const yAxisValues = seriesData
-    .map(d => {
-      const temp = {...d};
+    .map((d) => {
+      const temp = { ...d };
       delete temp.date;
       return Object.values(temp);
     })
-  .reduce((r, cur) => [...r, ...cur], []);
-  
-  
+    .reduce((r, cur) => [...r, ...cur], []);
+
   const highlightArea = (e, key) => {
     const parentNode: HTMLElement = e.target.parentNode as HTMLElement;
-    const areas: NodeListOf<SVGPathElement> = parentNode.querySelectorAll(
-      'path'
-    );
-    const dataPointsGroups: NodeListOf<SVGCircleElement> = parentNode.querySelectorAll(
-      '.data-points'
-    );
+    const areas: NodeListOf<SVGPathElement> = parentNode.querySelectorAll('path');
+    const dataPointsGroups: NodeListOf<SVGCircleElement> = parentNode.querySelectorAll('.data-points');
 
     Array.from(areas).forEach((area) => {
       if (area.isSameNode(e.target)) {
@@ -191,23 +180,17 @@ export const AreaChart: FC<AreaChartProps> = ({
         width={width}
         height={height}
         onMouseLeave={(e) => resetHighlightArea(e)}
+        style={{ overflow: 'visible' }}
       >
-        <rect
-          x={0}
-          y={0}
-          width={width}
-          height={height}
-          fill="#fff"
-          style={{ pointerEvents: 'none' }}
-        />
+        <rect x={0} y={0} width={width} height={height} fill="#fff" style={{ pointerEvents: 'none' }} />
         <Label x={5} y={25}>
           {title}
         </Label>
         <defs>
           {Object.keys(colors).map((key) => (
             <linearGradient
-              key={`overlay-gradient-${key}`}
-              id={`overlay-gradient-${key}`}
+              key={`overlay-gradient-${key.replaceAll(' ', '-').toLowerCase()}`}
+              id={`overlay-gradient-${key.replaceAll(' ', '-').toLowerCase()}`}
               x1="0"
               y1="0"
               x2="0"
@@ -226,9 +209,7 @@ export const AreaChart: FC<AreaChartProps> = ({
             stroke="transparent"
             hideTicks
             tickComponent={TickPlain}
-            tickFormat={(v: any) =>
-              tickFormat.value.replace('{v}', String(v))
-            }
+            tickFormat={(v: any) => tickFormat.value.replace('{v}', String(v))}
           />
         )}
         {showAxisX && (
@@ -240,7 +221,7 @@ export const AreaChart: FC<AreaChartProps> = ({
             tickComponent={TickYear}
             hideTicks
             // numTicks={xAxisValues.length}
-            tickFormat={(v: any) => timeFormat(tickFormat.date)(new Date(v))}
+            tickFormat={(v: any) => timeFormat(tickFormat.date)(v.length === 6 ? new Date(v.substring(0,4), (parseInt(v.substring(4,6))) - 1) : new Date(v))}
             tickLabelProps={() => ({
               fill: '#000',
               fontSize: 11,
@@ -259,7 +240,6 @@ export const AreaChart: FC<AreaChartProps> = ({
         />
         <g>
           <AreaStack
-
             curve={curveMonotoneX}
             top={config.padding.top}
             left={config.padding.left}
@@ -276,16 +256,13 @@ export const AreaChart: FC<AreaChartProps> = ({
                     className="area-data"
                     key={`stack-${stack.key}`}
                     d={path(stack) || ''}
-                    fill={`url(#overlay-gradient-${stack.key})`}
-                    onMouseMove={(e) => highlightArea(e, stack.key)}
+                    fill={`url(#overlay-gradient-${stack.key.replaceAll(' ', '-').toLowerCase()})`}
+                    onMouseMove={(e) => highlightArea(e, stack.key.replaceAll(' ', '-').toLowerCase())}
                   />
                 ))}
 
                 {stacks.map((stack) => (
-                  <DataPoints
-                    className={`data-points data-points-${stack.key}`}
-                    key={`stack-group-${stack.key}`}
-                  >
+                  <DataPoints className={`data-points data-points-${stack.key.replaceAll(' ', '-').toLowerCase()}`} key={`stack-group-${stack.key}`}>
                     {stack.map((point, i) => (
                       <DataPoint
                         key={`point-${stack.key}-${i}`}

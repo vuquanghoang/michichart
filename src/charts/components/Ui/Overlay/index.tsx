@@ -21,12 +21,11 @@ const Overlay: FC<{
   backgroundColor = '#000',
   ...otherProps
 }) => {
-  return createPortal(
-    <OverlayStyled style={{ zIndex, opacity, backgroundColor }} {...otherProps}>
-      ddd
-    </OverlayStyled>,
-    document.body
-  );
+  return <></>;
+  // return createPortal(
+  //   <OverlayStyled style={{ zIndex, opacity, backgroundColor }} {...otherProps}/>,
+  //   document.body
+  // );
 };
 
 export default Overlay;

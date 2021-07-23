@@ -4,6 +4,7 @@ import { VerticalBarChart, VerticalBarChartProps } from './index';
 import mockDataExport from './mockData/export.json';
 import mockDataImport from './mockData/import.json';
 import mockDataTotal from './mockData/total.json';
+import mockDataTrade from './mockData/trade.json';
 
 export default {
   title: 'Charts/Vertical Bar Chart',
@@ -22,17 +23,23 @@ Primary.args = {
   height: 400,
   seriesTotal: mockDataTotal,
   series: [
+    // {
+    //   data: mockDataImport,
+    //   label: 'Import',
+    //   key: 'import',
+    //   abbr: 'I',
+    // },
+    // {
+    //   data: mockDataExport,
+    //   label: 'Export',
+    //   key: 'export',
+    //   abbr: 'X',
+    // },
     {
-      data: mockDataImport,
-      label: 'Import',
-      key: 'import',
-      abbr: 'I',
-    },
-    {
-      data: mockDataExport,
-      label: 'Export',
-      key: 'export',
-      abbr: 'X',
+      data: mockDataTrade,
+      label: 'Trade',
+      key: 'trade',
+      abbr: 'T',
     },
   ],
   title: 'In $ mn',

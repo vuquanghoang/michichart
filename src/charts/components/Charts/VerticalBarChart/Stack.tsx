@@ -67,6 +67,7 @@ const Stack: ({
             overflow: 'hidden',
           }}
         >
+          <>
           {Object.keys(stackData)
             .filter((d) => d !== 'date')
             .map((k, i) => {
@@ -82,6 +83,7 @@ const Stack: ({
                 />
               );
             })}
+            </>
         </div>
       </foreignObject>
       <rect

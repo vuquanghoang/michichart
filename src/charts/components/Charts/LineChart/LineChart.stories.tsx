@@ -30,5 +30,5 @@ Primary.args = {
   stretching: true,
   minifyAxisX: true,
   minifyAxisY: true,
-  domainAxisY: [-20, 100],
+  // domainAxisY: [-20, 100],
 };

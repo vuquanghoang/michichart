@@ -9,7 +9,7 @@ import { TickPlain, TickYear } from '../../Axes';
 import Tooltip, { ITooltipContentProps } from '../../Tooltips/ToolipContent';
 import { defaultStyles, useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
-import { GridColumns, GridRows } from '@visx/grid';
+import { GridColumns } from '@visx/grid';
 
 const Styled = styled.div`
   contain: layout;
@@ -45,6 +45,10 @@ const TooltipStyled = styled.div`
   }
 `;
 
+const BarStyled = styled(Bar)`
+  transition: width 0.3s ease-out;
+`;
+
 interface IData {
   label: string;
   color?: string;
@@ -70,7 +74,7 @@ export interface HorizontalBarChartProps {
   domainAxisY?: number[] | null;
   showAxisX: boolean;
   showAxisY: boolean;
-  tickFormat: { value: string; date: string; currency?: string };
+  tickFormat: { value: string; date: string; currency?: string; scale?: string };
   direction: 'rtl' | 'ltr';
 }
 
@@ -104,12 +108,14 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
   const xScaleDomain = domainAxisX || [0, Math.max(...seriesData.map((d) => d.valueTotal))];
   const yScale = scaleBand({
     domain: seriesData.map((d) => d.label),
-    range: [0, height - (padding.bottom || 0)],
+    range: [padding.top, height - (padding.bottom || 0)],
   });
 
   const xScale = scaleLinear({
     domain: direction === 'ltr' ? xScaleDomain : xScaleDomain.reverse(),
     range: [padding.left || 0, width - padding.right],
+    nice: true,
+    clamp: true,
   });
 
   const ref = useRef(null);
@@ -150,7 +156,7 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
             top={0}
             left={padding.left - 30 || 0}
             scale={yScale}
-            tickFormat={(v) => tickFormat.value.replace('{v}', String(v))}
+            tickFormat={(v) => String(v)}
             stroke="transparent"
             hideTicks
             tickComponent={TickPlain}
@@ -171,29 +177,35 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
           const barWidth =
             direction === 'ltr' ? xScale(d.valueTotal) - padding.left : width - xScale(d.valueTotal) - padding.right;
           const barHighlightWidth =
-            direction === 'ltr' ? xScale(d.valueHighlight) - padding.left : width - xScale(d.valueHighlight) - padding.right;
-          const barY = (yScale(d.label) || 0) + 14;
+            direction === 'ltr'
+              ? xScale(d.valueHighlight) - padding.left
+              : width - xScale(d.valueHighlight) - padding.right;
+          const barY = (yScale(d.label) || 0) + yScale.bandwidth() / 2 - 16;
           const barX = direction === 'ltr' ? padding.left : padding.right;
           return (
             <g key={i}>
-              {console.log(d, xScale(d.valueTotal), xScale.invert(d.valueTotal))}
               <PatternLines
-                id={`grid-${d.label}`}
+                id={`grid-pattern-${i}`}
                 height={5}
                 width={5}
                 stroke={d.color}
                 strokeWidth={1}
                 orientation={['diagonalRightToLeft']}
               />
-              <Bar
+              <BarStyled
                 x={barX}
                 y={barY}
                 height={barHeight}
                 width={barWidth}
                 stroke={d.color}
-                fill={`url(#grid-${d.label})`}
+                fill={`url(#grid-pattern-${i})`}
                 rx={7}
                 style={{ transform: `translateX(${direction === 'ltr' ? 0 : xScale(d.valueTotal) - padding.right}px)` }}
+                onMouseLeave={() => {
+                  tooltipTimeout = window.setTimeout(() => {
+                    hideTooltip();
+                  }, 100);
+                }}
                 onMouseMove={(event) => {
                   event.preventDefault();
                   if (tooltipTimeout) clearTimeout(tooltipTimeout);
@@ -206,14 +218,36 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
                       content: (
                         <TooltipStyled>
                           <div className="total">
-                            <em>${d.valueTotal} mn</em>
+                            <em>
+                              {!tickFormat.value.includes('%') && (
+                                <>
+                                  {tickFormat.currency}
+                                  {Number(d?.valueTotal).toFixed(2)}
+                                  {tickFormat.scale}
+                                </>
+                              )}
+                              {tickFormat.value.includes('%') && (
+                                <>
+                                  {tickFormat.currency}
+                                  {Number(d?.valueTotal / 1000000).toFixed(2)}
+                                  mn
+                                </>
+                              )}
+                            </em>
                             <span>Export Potential</span>
                             <small>out of which</small>
                           </div>
                           <div className="remaining">
                             <b>
-                              ${d?.valueRemaining} mn{' '}
-                              <small>({(d?.valueRemaining / d.valueTotal) * 100}%) is unrealized</small>
+                              {tickFormat.value.includes('%') && <small>{d?.valueRemaining}% is unrealized</small>}
+                              {!tickFormat.value.includes('%') && (
+                                <>
+                                  ${d?.valueRemaining?.toFixed(2)} {tickFormat.scale ? tickFormat.scale : ''}
+                                  <small>
+                                    ({Number((d?.valueRemaining / d?.valueTotal) * 100).toFixed(0)}%) is unrealized
+                                  </small>
+                                </>
+                              )}
                             </b>
                           </div>
                         </TooltipStyled>
@@ -224,8 +258,8 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
                   });
                 }}
               />
-              <Bar
-                x={direction === 'ltr' ? barX :  xScale(d.valueHighlight)}
+              <BarStyled
+                x={direction === 'ltr' ? barX : xScale(d.valueHighlight)}
                 y={barY}
                 height={barHeight}
                 width={barHighlightWidth}
@@ -238,6 +272,14 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
             </g>
           );
         })}
+        <PatternLines
+          id={`grid-lg`}
+          height={5}
+          width={5}
+          stroke={'#918B86'}
+          strokeWidth={1}
+          orientation={['diagonalRightToLeft']}
+        />
       </svg>
 
       {tooltipOpen && tooltipData && (

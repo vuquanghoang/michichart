@@ -1,6 +1,6 @@
 import React, { FC, useRef } from 'react';
 import { LinePath } from '@visx/shape';
-import { curveMonotoneX, curveNatural } from '@visx/curve';
+import { curveMonotoneX } from '@visx/curve';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { GridRows } from '@visx/grid';
@@ -40,6 +40,8 @@ export interface LineChartProps {
   stretching: boolean;
   minifyAxisX: boolean;
   minifyAxisY: boolean;
+  hideNegativeAxisY: boolean;
+  disabledItems: string[];
 }
 
 const Styled = styled.div`
@@ -101,45 +103,25 @@ export const LineChart: FC<LineChartProps> = ({
   stretching = true,
   minifyAxisX = false,
   minifyAxisY = false,
+  hideNegativeAxisY = false,
+  disabledItems = [],
 }) => {
-  const {
-    tooltipOpen,
-    tooltipLeft,
-    tooltipTop,
-    tooltipData,
-    hideTooltip,
-    showTooltip,
-  } = useTooltip<ITooltipTrendProps>();
+  const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
+    useTooltip<ITooltipTrendProps>();
 
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
   });
 
-  const refinedPadding = padding
-    ? { ...defaultConfig.padding, ...padding }
-    : { ...defaultConfig.padding };
+  const refinedPadding = padding ? { ...defaultConfig.padding, ...padding } : { ...defaultConfig.padding };
 
   const getX = (d: DateValue) => d.date;
   const getY = (d: DateValue) => d.value;
 
-  const yAxisValues = series.reduce(
-    (result: number[], cur: any) => [
-      ...result,
-      ...cur.data.map((d) => d?.value),
-    ],
-    []
-  );
+  const yAxisValues = series.reduce((result: number[], cur: any) => [...result, ...cur.data.map((d) => d?.value)], []);
 
   const xAxisValues = Array.from(
-    new Set(
-      series.reduce(
-        (result: any[], cur: any) => [
-          ...result,
-          ...cur.data.map((d) => d?.date),
-        ],
-        []
-      )
-    )
+    new Set(series.reduce((result: any[], cur: any) => [...result, ...cur.data.map((d) => d?.date)], [])),
   ).sort();
 
   const xScale = scaleBand<number>({
@@ -151,7 +133,7 @@ export const LineChart: FC<LineChartProps> = ({
 
   const maxY = Math.max(...yAxisValues.map((d) => Math.abs(d)));
   const yScale = scaleLinear<number>({
-    domain: domainAxisY || [maxY * -1, maxY],
+    domain: domainAxisY || (hideNegativeAxisY ? [0, maxY] : [maxY * -1, maxY]),
     zero: true,
     nice: true,
     clamp: true,
@@ -165,25 +147,19 @@ export const LineChart: FC<LineChartProps> = ({
   const highlight = (node, index) => {
     select(node.parentNode).raise();
 
-    selectAll(`${className ? `.${className}` : ''} .data-point`).each(
-      function () {
-        (this as HTMLElement)?.classList.remove('highlight');
-      }
-    );
+    selectAll(`${className ? `.${className}` : ''} .data-point`).each(function () {
+      (this as HTMLElement)?.classList.remove('highlight');
+    });
 
-    selectAll(`${className ? `.${className}` : ''} .data-point-${index}`).each(
-      function () {
-        (this as HTMLElement)?.classList.add('highlight');
-      }
-    );
+    selectAll(`${className ? `.${className}` : ''} .data-point-${index}`).each(function () {
+      (this as HTMLElement)?.classList.add('highlight');
+    });
   };
 
   const resetHighlight = () => {
-    selectAll(`${className ? `.${className}` : ''} .data-point`).each(
-      function () {
-        (this as HTMLElement)?.classList.remove('highlight');
-      }
-    );
+    selectAll(`${className ? `.${className}` : ''} .data-point`).each(function () {
+      (this as HTMLElement)?.classList.remove('highlight');
+    });
   };
 
   // @ts-ignore
@@ -222,7 +198,8 @@ export const LineChart: FC<LineChartProps> = ({
             width={width - refinedPadding.right - refinedPadding.left}
             top={0}
             left={refinedPadding.left}
-            stroke="#d3d3d3"
+            stroke="#000000"
+            strokeWidth={1}
             strokeDasharray="none"
             tickValues={[0]}
           />
@@ -249,7 +226,9 @@ export const LineChart: FC<LineChartProps> = ({
               hideTicks
               numTicks={minifyAxisX ? undefined : xAxisValues.length}
               tickFormat={(v: any) =>
-                timeFormat(tickFormat.date)(new Date(`${v}`))
+                timeFormat(tickFormat.date)(
+                  v.length === 6 ? new Date(v.substring(0, 4), parseInt(v.substring(4, 6)) - 1) : new Date(v),
+                )
               }
               tickLabelProps={() => ({
                 fill: '#000',
@@ -264,7 +243,11 @@ export const LineChart: FC<LineChartProps> = ({
             series.map(({ data, label }, i) => (
               <DataGroup key={`g-line-path-${i}`}>
                 <LinePath<DateValue>
-                  style={{ pointerEvents: 'stroke' }}
+                  style={{
+                    pointerEvents: disabledItems.includes(label) ? 'none' : 'stroke',
+                    transition: 'all 0.3s ease-out',
+                    opacity: disabledItems.includes(label) ? 0 : 1,
+                  }}
                   key={`line-path-${i}`}
                   className={`data-segment data-segment-${i}`}
                   data={data}
@@ -272,7 +255,7 @@ export const LineChart: FC<LineChartProps> = ({
                   // @ts-ignore
                   x={(d) => xScale(getX(d)) + xScale.bandwidth() / 2}
                   y={(d) => yScale(getY(d) ?? 0)}
-                  curve={curveNatural}
+                  curve={curveMonotoneX}
                   stroke={colors !== null ? colors[label] : colorsDefault[i]}
                   strokeWidth={3}
                   strokeLinecap="square"
@@ -288,7 +271,13 @@ export const LineChart: FC<LineChartProps> = ({
           series.map(({ data, label }, i) => (
             <g key={`g-segment-${i}&`}>
               {data.map((dp, j) => (
-                <g key={`g-${i}&${j}`}>
+                <g
+                  key={`g-${i}&${j}`}
+                  style={{
+                    pointerEvents: disabledItems.includes(label) ? 'none' : 'auto',
+                    opacity: disabledItems.includes(label) ? 0 : 1,
+                  }}
+                >
                   <circle
                     className={`data-point data-point-${i}`}
                     key={`${i}&${j}`}

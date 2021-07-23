@@ -11,6 +11,7 @@ import colorsDefault from '../../../constants/colors';
 import Tooltip, { ITooltipTrendProps } from '../../Tooltips/TooltipTrend';
 import Stack from './Stack';
 import { defaultConfig } from '../../../helpers';
+import { timeFormat } from 'd3-time-format';
 
 let tooltipTimeout: number;
 
@@ -32,7 +33,7 @@ export interface VerticalBarChartProps {
   domainAxisY: number[] | null;
   showAxisX: boolean;
   showAxisY: boolean;
-};
+}
 
 export const VerticalBarChart: FC<{
   series: any[];
@@ -82,7 +83,7 @@ export const VerticalBarChart: FC<{
       ...result,
       [d.key]: d.abbr,
     }),
-    {}
+    {},
   );
   const keys = filteredSeries.map((d) => d.key);
   // accessors
@@ -99,10 +100,7 @@ export const VerticalBarChart: FC<{
     padding: 0.1,
   });
   const objectScale = scaleLinear<number>({
-    domain: domainAxisY || [
-      0,
-      Math.max(...seriesTotal.map((d) => Math.max(d?.export, d?.import))),
-    ],
+    domain: domainAxisY || [0, Math.max(...seriesTotal.map((d) => Math.max(d?.export, d?.import, d?.trade || 0)))],
     range: [50, height - 50],
   });
   const colorScale = scaleOrdinal<string, string>({
@@ -110,14 +108,8 @@ export const VerticalBarChart: FC<{
     range: colorsDefault,
   });
 
-  const {
-    tooltipOpen,
-    tooltipLeft,
-    tooltipTop,
-    tooltipData,
-    hideTooltip,
-    showTooltip,
-  } = useTooltip<ITooltipTrendProps>();
+  const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
+    useTooltip<ITooltipTrendProps>();
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
   });
@@ -177,10 +169,7 @@ export const VerticalBarChart: FC<{
           >
             {(barGroups) =>
               barGroups.map((barGroup) => (
-                <Group
-                  key={`bar-group-${barGroup.index}-${barGroup.x0}`}
-                  left={barGroup.x0}
-                >
+                <Group key={`bar-group-${barGroup.index}-${barGroup.x0}`} left={barGroup.x0}>
                   {barGroup.bars.map((bar) => (
                     <g
                       x={bar.x}
@@ -209,9 +198,7 @@ export const VerticalBarChart: FC<{
                           if (barGroup !== undefined) {
                             if (tooltipTimeout) clearTimeout(tooltipTimeout);
                             const eventSvgCoords = localPoint(event);
-                            const left = eventSvgCoords
-                              ? eventSvgCoords?.x - bar.width / 2
-                              : bar.x;
+                            const left = eventSvgCoords ? eventSvgCoords?.x - bar.width / 2 : bar.x;
 
                             showTooltip({
                               tooltipData: {
@@ -231,18 +218,9 @@ export const VerticalBarChart: FC<{
                         }}
                         series={filteredSeries}
                       />
-                      {barGroup.index === 0 && (
-                        <foreignObject
-                          x={bar.x}
-                          y={bar.y + bar.height + 5}
-                          width={bar.width}
-                          height={20}
-                        >
-                          <div style={{ textAlign: 'center' }}>
-                            {keyAbbr[bar.key]}
-                          </div>
-                        </foreignObject>
-                      )}
+                      <foreignObject x={bar.x} y={bar.y + bar.height + 5} width={bar.width} height={20}>
+                        <div style={{ textAlign: 'center' }}>{keyAbbr[bar.key]}</div>
+                      </foreignObject>
                     </g>
                   ))}
                 </Group>
@@ -258,6 +236,11 @@ export const VerticalBarChart: FC<{
             scale={dateScale}
             stroke="transparent"
             tickStroke="transparent"
+            tickFormat={(v: any) =>
+              timeFormat(tickFormat.date)(
+                v.length === 6 ? new Date(v.substring(0, 4), parseInt(v.substring(4, 6)) - 1) : new Date(v),
+              )
+            }
             numTicks={20}
             hideAxisLine
             tickLabelProps={() => ({
@@ -287,4 +270,3 @@ export const VerticalBarChart: FC<{
     </div>
   );
 };
-

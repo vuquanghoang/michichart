@@ -9,6 +9,7 @@ import {
   Trend,
   Value,
 } from './Styled';
+import {AxisBottom} from "@visx/axis";
 
 export interface ITooltipTrendProps {
   label: string;
@@ -46,18 +47,27 @@ const TooltipTrend: FC<ITooltipTrendProps> = ({
     offset: number
   ) => {
     if (dataSeries.length === 0) return null;
-    const time = new Date(`${date}`).getTime();
-    const dataOffset = dataSeries.filter((d) =>
-      offset === -1
-        ? new Date(`${d.date}`).getTime() < time
-        : new Date(`${d.date}`).getTime() > time
-    );
+    // const time = new Date(`${date}`).getTime();
+    const time =  (date.length === 6 ? new Date(Number(date.substring(0, 4)), (parseInt(date.substring(4,6))) - 1) : new Date(date)).getTime();
+    const dataOffset = dataSeries.filter((d) => {
+      const offsetTime = (d.date.length === 6 ? new Date(Number(d.date.substring(0, 4)), (parseInt(d.date.substring(4,6))) - 1) : new Date(d.date)).getTime();
+      return offset === -1 ? offsetTime < time : offsetTime > time
+    });
     const closestTime =
       offset === -1
-        ? Math.max(...dataOffset.map((d) => new Date(`${d.date}`).getTime()))
-        : Math.min(...dataOffset.map((d) => new Date(`${d.date}`).getTime()));
+        ? Math.max(...dataOffset.map((d) => {
+          const time = (d.date.length === 6 ? new Date(Number(d.date.substring(0, 4)), (parseInt(d.date.substring(4,6))) - 1) : new Date(d.date)).getTime();
+          return time;
+        }))
+        : Math.min(...dataOffset.map((d) => {
+          const time = (d.date.length === 6 ? new Date(Number(d.date.substring(0, 4)), (parseInt(d.date.substring(4,6))) - 1) : new Date(d.date)).getTime();
+          return time;
+        }));
     const closestData = dataOffset.find(
-      (d) => new Date(`${d.date}`).getTime() === closestTime
+      (d) => {
+        const time = (d.date.length === 6 ? new Date(Number(d.date.substring(0, 4)), (parseInt(d.date.substring(4,6))) - 1) : new Date(d.date)).getTime();
+        return time === closestTime
+      }
     );
 
     if (!closestData) return null;
@@ -92,7 +102,7 @@ const TooltipTrend: FC<ITooltipTrendProps> = ({
       </Value>
       <Label>{label}</Label>
       <DateFormatted>
-        {timeFormat(tickFormat.date)(new Date(String(date)))}
+        {timeFormat(tickFormat.date)((date.length === 6 ? new Date(Number(date.substring(0, 4)), (parseInt(date.substring(4,6))) - 1) : new Date(date)))}
       </DateFormatted>
       <div className="separator">
         <span className="middle-point" />

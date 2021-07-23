@@ -2,6 +2,7 @@
   {
     "value": "69",
     "label": "World",
+    "disabled": true,
     "children": [
       {
         "value": "0",
