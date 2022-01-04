@@ -47,4 +47,11 @@ Primary.args = {
     'All Africa': '#1F77B4',
     'Central Africa': '#FF7F0E',
   },
+  isScaled:true,
+  scaleFormat:{
+    b: '$ {v}b',
+    m: '$ {v}m',
+    k: '$ {v}k',
+    n: '$ {v}',
+  },
 };

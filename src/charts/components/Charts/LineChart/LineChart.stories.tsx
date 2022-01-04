@@ -17,6 +17,13 @@ Primary.args = {
     value: '{v}%',
     date: '%Y',
   },
+  isScaled:true,
+  scaleFormat:{
+    b: '$b{v}',
+    m: '$m{v}',
+    k: '$k{v}',
+    n: '${v}',
+  },
   padding: {
     top: 50,
     right: 50,

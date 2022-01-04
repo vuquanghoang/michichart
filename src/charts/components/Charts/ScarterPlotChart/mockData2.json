@@ -1,0 +1,90 @@
+[
+  {
+    "label": "Animals & animal products",
+    "d": 1,
+    "y": "17.25",
+    "x": "54.55",
+    "color": "#84f99d",
+    "code": "6"
+  },
+  {
+    "label": "Hazardous products",
+    "d": 1,
+    "y": "7.86",
+    "x": "76.19",
+    "color": "#efaeeb",
+    "code": "41"
+  },
+  {
+    "label": "Processed food & animal feed",
+    "d": 1,
+    "y": "17.20",
+    "x": "69.23",
+    "color": "#ea5a07",
+    "code": "74"
+  },
+  {
+    "label": "Chemicals",
+    "d": 1,
+    "y": "14.11",
+    "x": "16.36",
+    "color": "#bce276",
+    "code": "21"
+  },
+  {
+    "label": "Beverages",
+    "d": 1,
+    "y": "22.61",
+    "x": "72.73",
+    "color": "#34c182",
+    "code": "11"
+  },
+  {
+    "label": "Wood, paper, rubber, plastics",
+    "d": 1,
+    "y": "9.27",
+    "x": "57.35",
+    "color": "#a3082c",
+    "code": "103"
+  },
+  {
+    "label": "Vehicles",
+    "d": 1,
+    "y": "16.25",
+    "x": "11.11",
+    "color": "#95d8f4",
+    "code": "98"
+  },
+  {
+    "label": "Mineral primary products",
+    "d": 3,
+    "y": "9.31",
+    "x": "40.49",
+    "color": "#80ea60",
+    "code": "56"
+  },
+  {
+    "label": "Vegetal products n.e.s",
+    "d": 1,
+    "y": "20.30",
+    "x": "45.83",
+    "color": "#f3f970",
+    "code": "96"
+  },
+  {
+    "label": "Manufactured products n.e.s",
+    "d": 1,
+    "y": "18.08",
+    "x": "27.69",
+    "color": "#425ba5",
+    "code": "50"
+  },
+  {
+    "label": "Apparel & textile products",
+    "d": 1,
+    "y": "22.72",
+    "x": "40.63",
+    "color": "#74c2f7",
+    "code": "8"
+  }
+]

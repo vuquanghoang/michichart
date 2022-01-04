@@ -223,6 +223,7 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
                                 <>
                                   {tickFormat.currency}
                                   {Number(d?.valueTotal).toFixed(2)}
+                                  {" "}
                                   {tickFormat.scale}
                                 </>
                               )}
@@ -242,7 +243,7 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
                               {tickFormat.value.includes('%') && <small>{d?.valueRemaining}% is unrealized</small>}
                               {!tickFormat.value.includes('%') && (
                                 <>
-                                  ${d?.valueRemaining?.toFixed(2)} {tickFormat.scale ? tickFormat.scale : ''}
+                                  ${d?.valueRemaining?.toFixed(2)} {" "} {tickFormat.scale ? tickFormat.scale : ''}
                                   <small>
                                     ({Number((d?.valueRemaining / d?.valueTotal) * 100).toFixed(0)}%) is unrealized
                                   </small>

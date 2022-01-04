@@ -12,6 +12,14 @@ import { defaultConfig } from '../../../helpers';
 import { Label, TickPlain, TickYear } from '../../Axes';
 import Tooltip, { ITooltipTrendProps } from '../../Tooltips/TooltipTrend';
 import { extent } from 'd3-array';
+import sum from 'lodash/sum';
+
+const SCALE = {
+  N: 'n',
+  K: 'k',
+  M: 'm',
+  B: 'b',
+};
 
 const Styled = styled.div`
   contain: layout;
@@ -38,16 +46,12 @@ const DataPoints = styled.g`
   }
 `;
 
-const DataPoint = styled.circle`
-  stroke-width: 3px;
-  stroke: rgba(255, 255, 255, 0.9);
+const DataPoint = styled.rect`
+  stroke: rgba(255, 255, 255, 1);
+  stroke-width: 5px;
+  stroke-opacity: 0;
+  fill: #fff;
 `;
-
-// const colors = {
-//   Processed: ['#144F73', 'rgba(20,79,115,0.60)'],
-//   'Semi-processed': ['#AEC7E8', 'rgba(174,199,232,0.60)'],
-//   Raw: ['#FFAC00', 'rgba(255,172,0,0.60)'],
-// };
 
 let tooltipTimeout: number;
 
@@ -71,7 +75,14 @@ export interface AreaChartProps {
   tooltip: string | ReactNode | null;
   tooltipDefaultStyle: boolean;
   dataKeys: string[];
-  colors: Record<string, any[]>;
+  colors: Record<string, string>;
+  isScaled: boolean;
+  scaleFormat: {
+    b: string;
+    m: string;
+    k: string;
+    n: string;
+  };
 }
 
 export const AreaChart: FC<AreaChartProps> = ({
@@ -93,6 +104,13 @@ export const AreaChart: FC<AreaChartProps> = ({
   tooltipDefaultStyle = true,
   dataKeys = [],
   colors = {},
+  isScaled = false,
+  scaleFormat = {
+    b: '',
+    m: '',
+    k: '',
+    n: '',
+  },
 }) => {
   const config = {
     padding: {
@@ -118,7 +136,8 @@ export const AreaChart: FC<AreaChartProps> = ({
       delete temp.date;
       return Object.values(temp);
     })
-    .reduce((r, cur) => [...r, ...cur], []);
+    .reduce((r, cur) => [...r, sum(cur)], []);
+
 
   const highlightArea = (e, key) => {
     const parentNode: HTMLElement = e.target.parentNode as HTMLElement;
@@ -172,6 +191,33 @@ export const AreaChart: FC<AreaChartProps> = ({
     range: [height - config.padding.bottom, config.padding.top],
   });
 
+  let scale = SCALE.N;
+  const maxY = Math.max(...yAxisValues);
+  if (Math.abs(maxY) >= 1e9) {
+    scale = SCALE.B;
+  } else if (Math.abs(maxY) >= 1e6) {
+    scale = SCALE.M;
+  } else if (Math.abs(maxY) >= 1e3) {
+    scale = SCALE.K;
+  }
+
+  const formatDataByScale = (scale, data) => {
+    let scaledData = data;
+    switch (scale) {
+      case SCALE.B:
+        scaledData = data / 1000000000;
+        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
+      case SCALE.M:
+        scaledData = data / 1000000;
+        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
+      case SCALE.K:
+        scaledData = data / 1000;
+        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
+      default:
+        return data;
+    }
+  };
+
   return (
     <Styled>
       <svg
@@ -186,21 +232,6 @@ export const AreaChart: FC<AreaChartProps> = ({
         <Label x={5} y={25}>
           {title}
         </Label>
-        <defs>
-          {Object.keys(colors).map((key) => (
-            <linearGradient
-              key={`overlay-gradient-${key.replaceAll(' ', '-').toLowerCase()}`}
-              id={`overlay-gradient-${key.replaceAll(' ', '-').toLowerCase()}`}
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
-              <stop offset="0%" stopColor={colors[key][0]} stopOpacity="1" />
-              <stop offset="100%" stopColor={colors[key][1]} stopOpacity="1" />
-            </linearGradient>
-          ))}
-        </defs>
         {showAxisY && (
           <AxisLeft
             top={0}
@@ -209,7 +240,7 @@ export const AreaChart: FC<AreaChartProps> = ({
             stroke="transparent"
             hideTicks
             tickComponent={TickPlain}
-            tickFormat={(v: any) => tickFormat.value.replace('{v}', String(v))}
+            tickFormat={(v) => scaleFormat[scale].replace('{v}', formatDataByScale(scale, v))}
           />
         )}
         {showAxisX && (
@@ -221,7 +252,11 @@ export const AreaChart: FC<AreaChartProps> = ({
             tickComponent={TickYear}
             hideTicks
             // numTicks={xAxisValues.length}
-            tickFormat={(v: any) => timeFormat(tickFormat.date)(v.length === 6 ? new Date(v.substring(0,4), (parseInt(v.substring(4,6))) - 1) : new Date(v))}
+            tickFormat={(v: any) =>
+              timeFormat(tickFormat.date)(
+                v.length === 6 ? new Date(v.substring(0, 4), parseInt(v.substring(4, 6)) - 1) : new Date(v),
+              )
+            }
             tickLabelProps={() => ({
               fill: '#000',
               fontSize: 11,
@@ -256,22 +291,24 @@ export const AreaChart: FC<AreaChartProps> = ({
                     className="area-data"
                     key={`stack-${stack.key}`}
                     d={path(stack) || ''}
-                    fill={`url(#overlay-gradient-${stack.key.replaceAll(' ', '-').toLowerCase()})`}
+                    fill={colors[stack.key]}
                     onMouseMove={(e) => highlightArea(e, stack.key.replaceAll(' ', '-').toLowerCase())}
                   />
                 ))}
 
                 {stacks.map((stack) => (
-                  <DataPoints className={`data-points data-points-${stack.key.replaceAll(' ', '-').toLowerCase()}`} key={`stack-group-${stack.key}`}>
+                  <DataPoints
+                    className={`data-points data-points-${stack.key.replaceAll(' ', '-').toLowerCase()}`}
+                    key={`stack-group-${stack.key}`}
+                  >
                     {stack.map((point, i) => (
                       <DataPoint
                         key={`point-${stack.key}-${i}`}
-                        cx={xScale(getDate(point)) ?? 0}
-                        cy={yScale(getY1(point)) ?? 0}
-                        r={3}
-                        stroke="#fff"
-                        strokeWidth={1}
-                        fill={colors[stack.key][0]}
+                        x={xScale(getDate(point)) ? xScale(getDate(point)) :  0}
+                        y={yScale(getY1(point)) ? yScale(getY1(point)) : 0}
+                        width={1}
+                        height={(yScale(getY0(point)) ?? 0) - (yScale(getY1(point)) ?? 0)}
+                        fill={colors[stack.key]}
                         onMouseLeave={(event) => {
                           tooltipTimeout = window.setTimeout(() => {
                             hideTooltip();
@@ -293,6 +330,9 @@ export const AreaChart: FC<AreaChartProps> = ({
                                 value: d[stack.key],
                               })),
                               tickFormat,
+                              isScaled:isScaled,
+                              scale:scale,
+                              scaleFormat:scaleFormat,
                             },
                             tooltipTop: eventSvgCoords?.y,
                             tooltipLeft: left,
@@ -319,6 +359,9 @@ export const AreaChart: FC<AreaChartProps> = ({
             value={tooltipData.value}
             dataSeries={tooltipData.dataSeries}
             tickFormat={tickFormat}
+            isScaled={isScaled}
+            scale={scale}
+            scaleFormat={scaleFormat}
           />
         </TooltipInPortal>
       )}

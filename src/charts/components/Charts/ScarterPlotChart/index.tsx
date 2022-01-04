@@ -12,7 +12,7 @@ import { Label, TickPlain } from '../../Axes';
 import Tooltip, { ITooltipContentProps } from '../../Tooltips/ToolipContent';
 
 const Styled = styled.div`
-  contain: layout;
+  contain: layout;z
 `;
 
 const LegendTitle = styled.div`
@@ -181,6 +181,8 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
 
         {seriesData &&
           orderBy(seriesData, ['d'], ['desc']).map((d, i) => (
+            <>
+              <div className="tt">{diameterScale(d.d) }</div>
             <circle
               className={`dot dot-${d?.code ? d.code : ''}`}
               key={`circle-${i}`}
@@ -226,6 +228,7 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
                 });
               }}
             />
+            </>
           ))}
         {seriesData.length > 0 && (
           <g>
@@ -257,7 +260,7 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
                   >
                     0
                   </LegendText>
-                  {diameterScale.quantiles().map((d, i) => (
+                  {diameterScale.range().map((d, i) => (
                     <LegendText
                       key={`td-${i}`}
                       style={{

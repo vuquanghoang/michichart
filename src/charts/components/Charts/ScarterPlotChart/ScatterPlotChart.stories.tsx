@@ -1,7 +1,7 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import { ScatterPlotChart, ScatterPlotChartProps } from './index';
-import mockData from './mockData.json';
+import mockData from './mockData2.json';
 
 export default {
   title: 'Charts/Scatter Plot Chart',

@@ -26,7 +26,7 @@ Primary.args = {
   showAxisX: true,
   showAxisY: true,
   tickFormat: {
-    value: '${v}',
+    value: '${v} mn',
     date: '%Y',
     scale: 'mn',
   },

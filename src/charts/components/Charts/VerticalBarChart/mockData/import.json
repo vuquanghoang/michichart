@@ -1,50 +1,50 @@
 [
   {
-    "date": "202004",
-    "All Africa": 572506
+    "date": 202001,
+    "Manufacturing": 25.418916000000003
   },
   {
-    "date": "202005",
-    "All Africa": 979243
+    "date": 202002,
+    "Manufacturing": 32.906904999999995
   },
   {
-    "date": "202006",
-    "All Africa": 1257578
+    "date": 202003,
+    "Manufacturing": 20.624498
   },
   {
-    "date": "202007",
-    "All Africa": 1187261
+    "date": 202004,
+    "Manufacturing": 26.216599000000002
   },
   {
-    "date": "202008",
-    "All Africa": 1218544
+    "date": 202005,
+    "Manufacturing": 30.517443999999998
   },
   {
-    "date": "202009",
-    "All Africa": 1367571
+    "date": 202006,
+    "Manufacturing": 22.001421
   },
   {
-    "date": "202010",
-    "All Africa": 1531496
+    "date": 202007,
+    "Manufacturing": 31.982391999999997
   },
   {
-    "date": "202011",
-    "All Africa": 1460359
+    "date": 202008,
+    "Manufacturing": 33.186451
   },
   {
-    "date": "202012",
-    "All Africa": 1302907
+    "date": 202009,
+    "Manufacturing": 35.638574
   },
   {
-    "date": "202101",
-    "All Africa": 385296
+    "date": 202010,
+    "Manufacturing": 42.096809
   },
   {
-    "date": "202102",
-    "All Africa": 460333
+    "date": 202011,
+    "Manufacturing": 36.458027
   },
   {
-    "date": "202103",
-    "All Africa": 494871
+    "date": 202012,
+    "Manufacturing": 28.876558000000003
   }
 ]

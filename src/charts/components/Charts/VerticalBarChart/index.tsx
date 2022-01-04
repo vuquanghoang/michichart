@@ -15,6 +15,13 @@ import { timeFormat } from 'd3-time-format';
 
 let tooltipTimeout: number;
 
+const SCALE = {
+  N: 'n',
+  K: 'k',
+  M: 'm',
+  B: 'b',
+};
+
 export interface VerticalBarChartProps {
   series: any[];
   seriesTotal: any[];
@@ -33,27 +40,16 @@ export interface VerticalBarChartProps {
   domainAxisY: number[] | null;
   showAxisX: boolean;
   showAxisY: boolean;
+  isScaled: boolean;
+  scaleFormat: {
+    b: string;
+    m: string;
+    k: string;
+    n: string;
+  };
 }
 
-export const VerticalBarChart: FC<{
-  series: any[];
-  seriesTotal: any[];
-  tickFormat: { value: string; date: string };
-  title: string | React.ReactNode;
-  width: number;
-  height: number;
-  colors: any | null;
-  padding: {
-    top?: number;
-    right?: number;
-    bottom?: number;
-    left?: number;
-  } | null;
-  domainAxisX: number[] | null;
-  domainAxisY: number[] | null;
-  showAxisX: boolean;
-  showAxisY: boolean;
-}> = ({
+export const VerticalBarChart: FC<VerticalBarChartProps> = ({
   series = [],
   seriesTotal = [],
   tickFormat = defaultConfig.tickFormat,
@@ -66,6 +62,13 @@ export const VerticalBarChart: FC<{
   domainAxisY = null,
   showAxisX = true,
   showAxisY = true,
+  isScaled = false,
+  scaleFormat = {
+    b: '',
+    m: '',
+    k: '',
+    n: '',
+  },
 }) => {
   const refinedPadding = padding
     ? {
@@ -85,7 +88,39 @@ export const VerticalBarChart: FC<{
     }),
     {},
   );
+
+  const maxY = Math.max(...seriesTotal.map((d) => Math.max(d?.export || 0, d?.import || 0, d?.trade || 0)));
+
+  let scale = SCALE.N;
+
+  if (Math.abs(maxY) >= 1e9) {
+    scale = SCALE.B;
+  } else if (Math.abs(maxY) >= 1e6) {
+    scale = SCALE.M;
+  } else if (Math.abs(maxY) >= 1e3) {
+    scale = SCALE.K;
+  }
+
+  const formatDataByScale = (scale, data) => {
+    let scaledData = data;
+    switch (scale) {
+      case SCALE.B:
+        scaledData = data / 1000000000;
+        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
+      case SCALE.M:
+        scaledData = data / 1000000;
+        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
+      case SCALE.K:
+        scaledData = data / 1000;
+        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
+      default:
+        return data;
+    }
+  };
+
   const keys = filteredSeries.map((d) => d.key);
+
+
   // accessors
   const getDate = (d) => d.date;
 
@@ -99,10 +134,12 @@ export const VerticalBarChart: FC<{
     domain: keys,
     padding: 0.1,
   });
+
   const objectScale = scaleLinear<number>({
-    domain: domainAxisY || [0, Math.max(...seriesTotal.map((d) => Math.max(d?.export, d?.import, d?.trade || 0)))],
+    domain: domainAxisY || [0, maxY],
     range: [50, height - 50],
   });
+
   const colorScale = scaleOrdinal<string, string>({
     domain: keys,
     range: colorsDefault,
@@ -141,7 +178,7 @@ export const VerticalBarChart: FC<{
             numTicks={5}
             strokeWidth={0}
             hideTicks
-            tickFormat={(v) => `${v}`}
+            tickFormat={(v) => scaleFormat[scale].replace('{v}', formatDataByScale(scale, v))}
             tickComponent={TickPlain}
           />
         )}
@@ -210,6 +247,9 @@ export const VerticalBarChart: FC<{
                                   value: parseFloat(d[bar.key]).toFixed(4),
                                 })),
                                 tickFormat,
+                                isScaled:isScaled,
+                                scale:scale,
+                                scaleFormat:scaleFormat,
                               },
                               tooltipTop: eventSvgCoords?.y,
                               tooltipLeft: left,
@@ -264,6 +304,9 @@ export const VerticalBarChart: FC<{
             value={tooltipData.value}
             dataSeries={tooltipData.dataSeries}
             tickFormat={tickFormat}
+            isScaled={isScaled}
+            scale={scale}
+            scaleFormat={scaleFormat}
           />
         </TooltipInPortal>
       )}

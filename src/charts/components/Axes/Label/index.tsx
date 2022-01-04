@@ -8,9 +8,9 @@ const LblStyled = styled.text`
   fill: #918b86;
 `;
 
-const Index: FC<{ x: number; y: number }> = ({ children, x, y }) => {
+const Index: FC<{ x: number; y: number; textAnchor?: string }> = ({ children, x, y, ...otherProps }) => {
   return (
-    <LblStyled x={x} y={y}>
+    <LblStyled x={x} y={y} {...otherProps}>
       {children}
     </LblStyled>
   );

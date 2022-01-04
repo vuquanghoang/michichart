@@ -1,0 +1,41 @@
+[
+  {
+    "value": "077",
+    "label": "All"
+  },
+  {
+    "value": "1002",
+    "label": "Rest of the world",
+    "parent": "077"
+  },
+  {
+    "value": "1001",
+    "label": "All Africa",
+    "parent": "077"
+  },
+  {
+    "value": "1040",
+    "label": "Central Africa",
+    "parent": "1001"
+  },
+  {
+    "value": "1041",
+    "label": "Eastern Africa",
+    "parent": "1001"
+  },
+  {
+    "value": "1042",
+    "label": "Northern Africa",
+    "parent": "1001"
+  },
+  {
+    "value": "1043",
+    "label": "Southern Africa",
+    "parent": "1001"
+  },
+  {
+    "value": "1044",
+    "label": "Western Africa",
+    "parent": "1001"
+  }
+]

@@ -14,3 +14,15 @@ export const defaultConfig = {
     left: 40,
   },
 };
+
+
+export const getPolygonString = (x, y, size) => {
+  const roundedX = parseInt(x);
+  const roundedY = parseInt(y);
+
+  const point1 = `${roundedX},${roundedY + size * 2}`;
+  const point2 = `${roundedX - size * 1.5},${roundedY - size / 4}`;
+  const point3 = `${roundedX + size * 1.5},${roundedY - (size / 4)}`;
+
+  return `${point1} ${point2} ${point3}`;
+}

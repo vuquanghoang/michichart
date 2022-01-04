@@ -19,10 +19,24 @@ export interface DateValue {
   value: number;
 }
 
+const SCALE = {
+  N: 'n',
+  K: 'k',
+  M: 'm',
+  B: 'b',
+};
+
 export interface LineChartProps {
   className: string;
   series: any[];
   tickFormat: { value: string; date: string };
+  isScaled: boolean;
+  scaleFormat: {
+    b: string;
+    m: string;
+    k: string;
+    n: string;
+  };
   title: string | React.ReactNode;
   width: number;
   height: number;
@@ -105,6 +119,13 @@ export const LineChart: FC<LineChartProps> = ({
   minifyAxisY = false,
   hideNegativeAxisY = false,
   disabledItems = [],
+  isScaled = false,
+  scaleFormat = {
+    b: '',
+    m: '',
+    k: '',
+    n: '',
+  },
 }) => {
   const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
     useTooltip<ITooltipTrendProps>();
@@ -132,6 +153,7 @@ export const LineChart: FC<LineChartProps> = ({
   });
 
   const maxY = Math.max(...yAxisValues.map((d) => Math.abs(d)));
+
   const yScale = scaleLinear<number>({
     domain: domainAxisY || (hideNegativeAxisY ? [0, maxY] : [maxY * -1, maxY]),
     zero: true,
@@ -140,6 +162,33 @@ export const LineChart: FC<LineChartProps> = ({
   });
 
   const ref = useRef(null);
+
+  let scale = SCALE.N;
+
+  if (Math.abs(maxY) >= 1e9) {
+    scale = SCALE.B;
+  } else if (Math.abs(maxY) >= 1e6) {
+    scale = SCALE.M;
+  } else if (Math.abs(maxY) >= 1e3) {
+    scale = SCALE.K;
+  }
+
+  const formatDataByScale = (scale, data) => {
+    let scaledData = data;
+    switch (scale) {
+      case SCALE.B:
+        scaledData = data / 1000000000;
+        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
+      case SCALE.M:
+        scaledData = data / 1000000;
+        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
+      case SCALE.B:
+        scaledData = data / 1000;
+        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
+      default:
+        return data;
+    }
+  };
 
   xScale.range([refinedPadding.left, width - refinedPadding.right]);
   yScale.range([height - 50, 50]);
@@ -212,7 +261,7 @@ export const LineChart: FC<LineChartProps> = ({
               stroke="transparent"
               hideTicks
               tickComponent={TickPlain}
-              tickFormat={(v) => tickFormat.value.replace('{v}', String(v))}
+              tickFormat={(v) => scaleFormat[scale].replace('{v}', formatDataByScale(scale, v))}
             />
           )}
 
@@ -269,7 +318,7 @@ export const LineChart: FC<LineChartProps> = ({
         </g>
         {series &&
           series.map(({ data, label }, i) => (
-            <g key={`g-segment-${i}&`}>
+            <g key={`g-segment-${i}`}>
               {data.map((dp, j) => (
                 <g
                   key={`g-${i}&${j}`}
@@ -307,6 +356,9 @@ export const LineChart: FC<LineChartProps> = ({
                           value: dp.value,
                           dataSeries: data,
                           tickFormat,
+                          isScaled:isScaled,
+                          scale:scale,
+                          scaleFormat:scaleFormat,
                         },
                         tooltipTop: eventSvgCoords?.y,
                         tooltipLeft: left,
@@ -329,6 +381,9 @@ export const LineChart: FC<LineChartProps> = ({
             date={tooltipData.date}
             value={tooltipData.value}
             dataSeries={tooltipData.dataSeries}
+            isScaled={isScaled}
+            scale={scale}
+            scaleFormat={scaleFormat}
             tickFormat={tickFormat}
           />
         </TooltipInPortal>

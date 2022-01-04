@@ -1,23 +1,26 @@
 {
   "name": "michi-charts",
-  "version": "0.0.101",
+  "version": "0.0.128",
   "author": "wildnessy",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",
   "devDependencies": {
     "@babel/core": "^7.14.6",
+    "@date-io/date-fns": "^2.11.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@material-ui/core": "^4.12.1",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/pickers": "^3.3.10",
     "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
-    "@storybook/addon-actions": "^6.3.4",
-    "@storybook/addon-essentials": "^6.3.4",
-    "@storybook/addon-links": "^6.3.4",
-    "@storybook/react": "^6.3.4",
+    "@storybook/addon-actions": "^6.3.12",
+    "@storybook/addon-essentials": "^6.3.12",
+    "@storybook/addon-links": "^6.3.12",
+    "@storybook/react": "^6.3.12",
     "@types/d3-selection": "^2.0.1",
     "@types/d3-time-format": "^3.0.1",
     "@types/react": "^17.0.14",
@@ -60,15 +63,17 @@
     "typescript": "^4.3.5"
   },
   "peerDependencies": {
+    "@date-io/date-fns": "^2.11.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.14",
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/pickers": "^3.3.10",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "react-remove-scroll-bar": "^2.2.0",
-    "styled-components": "^5.3.0",
-    "@fortawesome/fontawesome-svg-core": "^1.2.35",
-    "@fortawesome/free-solid-svg-icons": "^5.15.3",
-    "@fortawesome/react-fontawesome": "^0.1.14"
+    "styled-components": "^5.3.0"
   },
   "scripts": {
     "storybook": "start-storybook -p 6006",
@@ -76,7 +81,6 @@
     "build": "rollup -c",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
-  "dependencies": {},
   "directories": {
     "lib": "lib"
   },
