@@ -18,6 +18,7 @@ export interface ITooltipTrendProps {
   dataSeries: any[];
   tickFormat: { value: string; date: string };
   isScaled: boolean;
+  autoFormatDate: boolean;
   scale: string;
   scaleFormat: {
     b: string;
@@ -34,6 +35,7 @@ const TooltipTrend: FC<ITooltipTrendProps> = ({
   dataSeries = [],
   tickFormat = { value: '', date: '' },
   isScaled = false,
+  autoFormatDate = true,
   scale,
   scaleFormat = {
     b: '',
@@ -136,11 +138,12 @@ const TooltipTrend: FC<ITooltipTrendProps> = ({
       </Value>
       <Label>{label}</Label>
       <DateFormatted>
-        {timeFormat(tickFormat.date)(
+        {autoFormatDate && timeFormat(tickFormat.date)(
           date.length === 6
             ? new Date(Number(date.substring(0, 4)), parseInt(date.substring(4, 6)) - 1)
             : new Date(date),
         )}
+        {!autoFormatDate && date}
       </DateFormatted>
       <div className="separator">
         <span className="middle-point" />

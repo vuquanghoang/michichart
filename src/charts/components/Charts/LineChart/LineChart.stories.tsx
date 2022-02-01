@@ -17,13 +17,6 @@ Primary.args = {
     value: '{v}%',
     date: '%Y',
   },
-  isScaled:true,
-  scaleFormat:{
-    b: '$b{v}',
-    m: '$m{v}',
-    k: '$k{v}',
-    n: '${v}',
-  },
   padding: {
     top: 50,
     right: 50,
@@ -37,5 +30,25 @@ Primary.args = {
   stretching: true,
   minifyAxisX: true,
   minifyAxisY: true,
-  // domainAxisY: [-20, 100],
+  conf: {
+    tooltipContent: ({label, date, value, series}) => {
+      console.log(series)
+      return `<div>${label}</div><div>${date}: ${value}</div>`
+    },
+    axes: {
+      y: {
+        formatter: (value, value1) =>  {
+          console.log({value}, value1)
+          return new Intl.NumberFormat('en-US', { notation: "compact",
+            compactDisplay: "short"}).format(value)
+        },
+      },
+      x: {
+        formatter: (value) => value,
+        tickComponent: (value) => {
+          return `<tspan x=${value.x} y=${value.y}>${value.formattedValue}</tspan>`
+        }
+      }
+    },
+  },
 };

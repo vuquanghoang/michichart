@@ -1,0 +1,90 @@
+[
+  {
+    "label": "Mineral primary products",
+    "d": "6410711514",
+    "y": "6.18",
+    "x": "94.07",
+    "color": "#bdf9f9",
+    "code": "56"
+  },
+  {
+    "label": "Beverages",
+    "d": "5112151905",
+    "y": "20.00",
+    "x": "19.16",
+    "color": "#f791e8",
+    "code": "11"
+  },
+  {
+    "label": "Cereals & cereal products",
+    "d": "39576015323",
+    "y": "10.00",
+    "x": "94.71",
+    "color": "#c17100",
+    "code": "18"
+  },
+  {
+    "label": "Wood, paper, rubber, plastics",
+    "d": "37747470194",
+    "y": "4.57",
+    "x": "73.40",
+    "color": "#88ef8d",
+    "code": "103"
+  },
+  {
+    "label": "Processed food & animal feed",
+    "d": "30095328148",
+    "y": "19.32",
+    "x": "82.33",
+    "color": "#7211e0",
+    "code": "74"
+  },
+  {
+    "label": "Manufactured products n.e.s",
+    "d": "2805640248",
+    "y": "9.43",
+    "x": "57.14",
+    "color": "#c37fff",
+    "code": "50"
+  },
+  {
+    "label": "Chemicals",
+    "d": "20240933791",
+    "y": "13.18",
+    "x": "64.53",
+    "color": "#9b0917",
+    "code": "21"
+  },
+  {
+    "label": "Animals & animal products",
+    "d": "1809675832",
+    "y": "19.35",
+    "x": "42.48",
+    "color": "#6e68c4",
+    "code": "6"
+  },
+  {
+    "label": "Skins, leather, products thereof and footwear",
+    "d": "167738085",
+    "y": "14.77",
+    "x": "4.83",
+    "color": "#04a033",
+    "code": "84"
+  },
+  {
+    "label": "Vegetal products n.e.s",
+    "d": "14155342341",
+    "y": "9.97",
+    "x": "99.88",
+    "color": "#aec13e",
+    "code": "96"
+  },
+  {
+    "label": "Apparel & textile products",
+    "d": "102511017",
+    "y": "13.23",
+    "x": "0.14",
+    "color": "#99030d",
+    "code": "8"
+  }
+]

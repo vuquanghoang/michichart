@@ -3,8 +3,8 @@ import { Story, Meta } from '@storybook/react';
 import { VerticalBarChart, VerticalBarChartProps } from './index';
 import mockDataExport from './mockData/export.json';
 import mockDataImport from './mockData/import.json';
-import mockDataTotal from './mockData/total.json';
-import mockDataTrade from './mockData/trade.json';
+import mockDataTotal from './mockData/total2.json';
+import mockDataTrade from './mockData/trade2.json';
 
 export default {
   title: 'Charts/Vertical Bar Chart',
@@ -15,10 +15,6 @@ const Template: Story<VerticalBarChartProps> = (args) => <VerticalBarChart {...a
 
 export const Primary = Template.bind({});
 Primary.args = {
-  tickFormat: {
-    value: '${v} mn',
-    date: '%Y',
-  },
   width: 900,
   height: 400,
   seriesTotal: mockDataTotal,
@@ -38,7 +34,7 @@ Primary.args = {
     {
       data: mockDataTrade,
       label: 'Trade',
-      key: 'trade',
+      key: 'import',
       abbr: 'T',
     },
   ],
@@ -47,11 +43,24 @@ Primary.args = {
     'All Africa': '#1F77B4',
     'Central Africa': '#FF7F0E',
   },
-  isScaled:true,
-  scaleFormat:{
-    b: '$ {v}b',
-    m: '$ {v}m',
-    k: '$ {v}k',
-    n: '$ {v}',
+  conf: {
+    tooltipContent: ({label, date, value, series}) => `<div>${label}</div><div>${date}: ${ new Intl.NumberFormat('en-GB', {
+      notation: "compact",
+      compactDisplay: "short"
+    }).format(value)}</div>`,
+    axes: {
+      y: {
+        formatter: (value) =>  {
+          return new Intl.NumberFormat('en-US', { notation: "compact",
+            compactDisplay: "short"}).format(value)
+        },
+      },
+      x: {
+        formatter: (value) => value,
+        tickComponent: (value) => {
+          return `<tspan x=${value.x} y=${value.y}>${value.formattedValue}</tspan>`
+        }
+      }
+    },
   },
 };

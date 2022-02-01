@@ -4,39 +4,25 @@ import { curveMonotoneX } from '@visx/curve';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { GridRows } from '@visx/grid';
-import { timeFormat } from 'd3-time-format';
 import styled from 'styled-components';
 import { defaultStyles, useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
-import { select, selectAll } from 'd3-selection';
+import { select } from 'd3-selection';
 import colorsDefault from '../../../constants/colors';
-import { Label, TickPlain, TickYear } from '../../Axes';
-import Tooltip, { ITooltipTrendProps } from '../../Tooltips/TooltipTrend';
+import { Label } from '../../Axes';
+import { TooltipContentProps } from '../../Tooltips/ToolipContent';
 import { defaultConfig } from '../../../helpers';
+import { CLASS_NAME } from '../../../constants/utils';
 
 export interface DateValue {
   date: Date | string;
   value: number;
 }
 
-const SCALE = {
-  N: 'n',
-  K: 'k',
-  M: 'm',
-  B: 'b',
-};
-
 export interface LineChartProps {
   className: string;
   series: any[];
   tickFormat: { value: string; date: string };
-  isScaled: boolean;
-  scaleFormat: {
-    b: string;
-    m: string;
-    k: string;
-    n: string;
-  };
   title: string | React.ReactNode;
   width: number;
   height: number;
@@ -56,6 +42,7 @@ export interface LineChartProps {
   minifyAxisY: boolean;
   hideNegativeAxisY: boolean;
   disabledItems: string[];
+  conf?: any;
 }
 
 const Styled = styled.div`
@@ -104,7 +91,6 @@ let tooltipTimeout: number;
 export const LineChart: FC<LineChartProps> = ({
   className = '',
   series = [],
-  tickFormat = defaultConfig.tickFormat,
   title = '',
   height = defaultConfig.height,
   width = defaultConfig.width,
@@ -119,16 +105,10 @@ export const LineChart: FC<LineChartProps> = ({
   minifyAxisY = false,
   hideNegativeAxisY = false,
   disabledItems = [],
-  isScaled = false,
-  scaleFormat = {
-    b: '',
-    m: '',
-    k: '',
-    n: '',
-  },
+  conf = {},
 }) => {
   const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
-    useTooltip<ITooltipTrendProps>();
+    useTooltip<TooltipContentProps>();
 
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
@@ -163,55 +143,25 @@ export const LineChart: FC<LineChartProps> = ({
 
   const ref = useRef(null);
 
-  let scale = SCALE.N;
-
-  if (Math.abs(maxY) >= 1e9) {
-    scale = SCALE.B;
-  } else if (Math.abs(maxY) >= 1e6) {
-    scale = SCALE.M;
-  } else if (Math.abs(maxY) >= 1e3) {
-    scale = SCALE.K;
-  }
-
-  const formatDataByScale = (scale, data) => {
-    let scaledData = data;
-    switch (scale) {
-      case SCALE.B:
-        scaledData = data / 1000000000;
-        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
-      case SCALE.M:
-        scaledData = data / 1000000;
-        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
-      case SCALE.B:
-        scaledData = data / 1000;
-        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
-      default:
-        return data;
-    }
-  };
-
   xScale.range([refinedPadding.left, width - refinedPadding.right]);
   yScale.range([height - 50, 50]);
 
   const highlight = (node, index) => {
+    const root = node.closest('svg');
+
     select(node.parentNode).raise();
-
-    selectAll(`${className ? `.${className}` : ''} .data-point`).each(function () {
-      (this as HTMLElement)?.classList.remove('highlight');
-    });
-
-    selectAll(`${className ? `.${className}` : ''} .data-point-${index}`).each(function () {
-      (this as HTMLElement)?.classList.add('highlight');
-    });
+    Array.from(root.querySelectorAll('.data-point')).forEach(el => (el as HTMLElement).classList.remove(CLASS_NAME.HIGHLIGHT));
+    Array.from(root.querySelectorAll(`.data-point-${index}`)).forEach(el => (el as HTMLElement).classList.add(CLASS_NAME.HIGHLIGHT));
   };
 
-  const resetHighlight = () => {
-    selectAll(`${className ? `.${className}` : ''} .data-point`).each(function () {
-      (this as HTMLElement)?.classList.remove('highlight');
-    });
+  const resetHighlight = (node) => {
+    const root = node.closest('svg');
+
+    Array.from(root.querySelectorAll('.data-point')).forEach(el => (el as HTMLElement).classList.remove(CLASS_NAME.HIGHLIGHT));
   };
 
   // @ts-ignore
+
   return (
     <Styled>
       <svg
@@ -223,10 +173,10 @@ export const LineChart: FC<LineChartProps> = ({
           fontSize: width > 600 ? '1em' : '0.75em',
           overflow: 'visible',
         }}
-        onMouseLeave={resetHighlight}
+        onMouseLeave={event => resetHighlight(event.target as HTMLElement)}
       >
         <g ref={ref}>
-          <rect x={0} y={0} width={width} height={height} fill="#fff" />
+          {width> 0 && height> 0 && <rect x={0} y={0} width={width} height={height} fill="#fff" />}
           <Label x={5} y={25}>
             {title}
           </Label>
@@ -260,8 +210,14 @@ export const LineChart: FC<LineChartProps> = ({
               scale={yScale}
               stroke="transparent"
               hideTicks
-              tickComponent={TickPlain}
-              tickFormat={(v) => scaleFormat[scale].replace('{v}', formatDataByScale(scale, v))}
+              tickFormat={(v) => conf?.axes?.y?.formatter ? conf?.axes?.y?.formatter(v, yScale.ticks()) : v}
+              tickComponent={(v) => {
+                if (!conf?.axes?.y?.tickComponent) {
+                  const { formattedValue, ...otherProps } = v;
+                  return <text {...otherProps}>{formattedValue}</text>;
+                }
+                return <text dangerouslySetInnerHTML={{__html: conf?.axes?.y?.tickComponent(v)}}/>
+              }}
             />
           )}
 
@@ -271,20 +227,16 @@ export const LineChart: FC<LineChartProps> = ({
               left={0}
               scale={xScale}
               stroke="transparent"
-              tickComponent={TickYear}
               hideTicks
               numTicks={minifyAxisX ? undefined : xAxisValues.length}
-              tickFormat={(v: any) =>
-                timeFormat(tickFormat.date)(
-                  v.length === 6 ? new Date(v.substring(0, 4), parseInt(v.substring(4, 6)) - 1) : new Date(v),
-                )
-              }
-              tickLabelProps={() => ({
-                fill: '#000',
-                fontSize: 11,
-                textAnchor: 'middle',
-                width,
-              })}
+              tickComponent={(v) => {
+                if (!conf?.axes?.x?.tickComponent) {
+                  const { formattedValue, ...otherProps } = v;
+                  return <text {...otherProps}>{formattedValue}</text>;
+                }
+                return <text dangerouslySetInnerHTML={{__html: conf?.axes?.x?.tickComponent(v)}}/>
+              }}
+              tickFormat={(v) => conf?.axes?.x?.formatter ? conf?.axes?.x?.formatter(v) : v}
             />
           )}
 
@@ -350,15 +302,14 @@ export const LineChart: FC<LineChartProps> = ({
                       const left = xScale(getX(dp));
 
                       showTooltip({
+                        // @ts-ignore
                         tooltipData: {
-                          label,
-                          date: dp.date,
-                          value: dp.value,
-                          dataSeries: data,
-                          tickFormat,
-                          isScaled:isScaled,
-                          scale:scale,
-                          scaleFormat:scaleFormat,
+                          item: {
+                            label,
+                            date: dp.date,
+                            value: dp.value,
+                          },
+                          series: data,
                         },
                         tooltipTop: eventSvgCoords?.y,
                         tooltipLeft: left,
@@ -370,22 +321,13 @@ export const LineChart: FC<LineChartProps> = ({
             </g>
           ))}
       </svg>
-      {tooltipOpen && tooltipData && (
+      {tooltipOpen && tooltipData && conf?.tooltipContent && (
         <TooltipInPortal
           top={tooltipTop}
           left={tooltipLeft}
           style={{ ...defaultStyles, boxShadow: 'none', padding: 0 }}
         >
-          <Tooltip
-            label={tooltipData.label}
-            date={tooltipData.date}
-            value={tooltipData.value}
-            dataSeries={tooltipData.dataSeries}
-            isScaled={isScaled}
-            scale={scale}
-            scaleFormat={scaleFormat}
-            tickFormat={tickFormat}
-          />
+          <div dangerouslySetInnerHTML={{ __html: conf.tooltipContent(tooltipData) }} />
         </TooltipInPortal>
       )}
     </Styled>

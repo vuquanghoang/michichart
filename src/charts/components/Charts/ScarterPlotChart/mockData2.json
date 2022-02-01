@@ -25,7 +25,7 @@
   },
   {
     "label": "Chemicals",
-    "d": 1,
+    "d": 5,
     "y": "14.11",
     "x": "16.36",
     "color": "#bce276",
@@ -33,7 +33,7 @@
   },
   {
     "label": "Beverages",
-    "d": 1,
+    "d": 7.7,
     "y": "22.61",
     "x": "72.73",
     "color": "#34c182",
@@ -41,7 +41,7 @@
   },
   {
     "label": "Wood, paper, rubber, plastics",
-    "d": 1,
+    "d": 7,
     "y": "9.27",
     "x": "57.35",
     "color": "#a3082c",
@@ -49,7 +49,7 @@
   },
   {
     "label": "Vehicles",
-    "d": 1,
+    "d": 9,
     "y": "16.25",
     "x": "11.11",
     "color": "#95d8f4",
@@ -65,7 +65,7 @@
   },
   {
     "label": "Vegetal products n.e.s",
-    "d": 1,
+    "d": 2.5,
     "y": "20.30",
     "x": "45.83",
     "color": "#f3f970",
@@ -73,7 +73,7 @@
   },
   {
     "label": "Manufactured products n.e.s",
-    "d": 1,
+    "d": 2,
     "y": "18.08",
     "x": "27.69",
     "color": "#425ba5",
@@ -81,7 +81,7 @@
   },
   {
     "label": "Apparel & textile products",
-    "d": 1,
+    "d": 1.7,
     "y": "22.72",
     "x": "40.63",
     "color": "#74c2f7",

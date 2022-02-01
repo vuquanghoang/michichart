@@ -1,11 +1,11 @@
 import React, { FC, ReactNode } from 'react';
 import {
-  createMuiTheme,
+  createTheme,
   ThemeOptions,
   ThemeProvider,
 } from '@material-ui/core/styles';
 
-const theme: ThemeOptions = createMuiTheme({
+const theme: ThemeOptions = createTheme({
   props: {
     MuiButtonBase: {
       disableRipple: true,

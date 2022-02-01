@@ -42,5 +42,23 @@ Primary.args = {
       'All Africa': '#1F77B4',
       'Central Africa': '#FF7F0E',
     },
+    tooltipContent: ({item, series}) => {
+      console.log(series)
+      return `<div>${JSON.stringify(item)}</div>`
+    },
+    axes: {
+      y1: {
+        formatter: (value) =>  value,
+      },
+      y2: {
+        formatter: (value) =>  value,
+      },
+      x: {
+        formatter: (value) => value,
+        tickComponent: (value) => {
+          return `<tspan x=${value.x} y=${value.y}>${value.formattedValue}</tspan>`
+        }
+      }
+    },
   }
 }

@@ -87,6 +87,7 @@ const Stack: ({
         </div>
       </foreignObject>
       <rect
+        style={{transition: 'all 0.3s ease-out'}}
         x={containerLeft}
         y={containerTop}
         width={containerWidth}

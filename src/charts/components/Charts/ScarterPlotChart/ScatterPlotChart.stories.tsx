@@ -1,7 +1,7 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import { ScatterPlotChart, ScatterPlotChartProps } from './index';
-import mockData from './mockData2.json';
+import mockData from './mockData3.json';
 
 export default {
   title: 'Charts/Scatter Plot Chart',
@@ -17,7 +17,7 @@ Primary.args = {
   width: 900,
   height: 500,
   domainAxisX: null,
-  domainAxisY: null,
+  domainAxisY: [ 23, 0],
   axisYLbl: 'Preferential margin',
   axisXLbl: 'Utilization rate',
   padding: {
@@ -36,4 +36,31 @@ Primary.args = {
   },
   tooltip: null,
   tooltipDefaultStyle: true,
+  conf: {
+    tooltipContent: ({item, series}) => `<div>${ new Intl.NumberFormat('en-GB', {
+      notation: "compact",
+      compactDisplay: "short"
+    }).format(item.d)}</div>`,
+    axes: {
+      y: {
+        formatter: (value) =>  {
+          return new Intl.NumberFormat('en-US', { notation: "compact",
+            compactDisplay: "short"}).format(value)
+        },
+      },
+      x: {
+        formatter: (value) => value,
+        tickComponent: (value) => {
+          return `<tspan x=${value.x} y=${value.y}>${value.formattedValue}</tspan>`
+        }
+      }
+    },
+    legend: {
+      isEnabled: true,
+      content: '',
+      value: {
+        formatter: (value) => value
+      }
+    }
+  },
 };

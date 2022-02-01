@@ -6,26 +6,17 @@ import { scaleBand, scaleLinear, scaleOrdinal } from '@visx/scale';
 import { GridRows } from '@visx/grid';
 import { defaultStyles, useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
-import { Label, TickPlain, TickYear } from '../../Axes';
+import { Label } from '../../Axes';
 import colorsDefault from '../../../constants/colors';
-import Tooltip, { ITooltipTrendProps } from '../../Tooltips/TooltipTrend';
+import { TooltipContentProps } from '../../Tooltips/ToolipContent';
 import Stack from './Stack';
 import { defaultConfig } from '../../../helpers';
-import { timeFormat } from 'd3-time-format';
 
 let tooltipTimeout: number;
-
-const SCALE = {
-  N: 'n',
-  K: 'k',
-  M: 'm',
-  B: 'b',
-};
 
 export interface VerticalBarChartProps {
   series: any[];
   seriesTotal: any[];
-  tickFormat: { value: string; date: string };
   title: string | React.ReactNode;
   width: number;
   height: number;
@@ -47,12 +38,12 @@ export interface VerticalBarChartProps {
     k: string;
     n: string;
   };
+  conf?: any;
 }
 
 export const VerticalBarChart: FC<VerticalBarChartProps> = ({
   series = [],
   seriesTotal = [],
-  tickFormat = defaultConfig.tickFormat,
   title = '',
   height = defaultConfig.height,
   width = defaultConfig.width,
@@ -62,13 +53,7 @@ export const VerticalBarChart: FC<VerticalBarChartProps> = ({
   domainAxisY = null,
   showAxisX = true,
   showAxisY = true,
-  isScaled = false,
-  scaleFormat = {
-    b: '',
-    m: '',
-    k: '',
-    n: '',
-  },
+  conf = {},
 }) => {
   const refinedPadding = padding
     ? {
@@ -91,32 +76,6 @@ export const VerticalBarChart: FC<VerticalBarChartProps> = ({
 
   const maxY = Math.max(...seriesTotal.map((d) => Math.max(d?.export || 0, d?.import || 0, d?.trade || 0)));
 
-  let scale = SCALE.N;
-
-  if (Math.abs(maxY) >= 1e9) {
-    scale = SCALE.B;
-  } else if (Math.abs(maxY) >= 1e6) {
-    scale = SCALE.M;
-  } else if (Math.abs(maxY) >= 1e3) {
-    scale = SCALE.K;
-  }
-
-  const formatDataByScale = (scale, data) => {
-    let scaledData = data;
-    switch (scale) {
-      case SCALE.B:
-        scaledData = data / 1000000000;
-        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
-      case SCALE.M:
-        scaledData = data / 1000000;
-        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
-      case SCALE.K:
-        scaledData = data / 1000;
-        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
-      default:
-        return data;
-    }
-  };
 
   const keys = filteredSeries.map((d) => d.key);
 
@@ -138,6 +97,8 @@ export const VerticalBarChart: FC<VerticalBarChartProps> = ({
   const objectScale = scaleLinear<number>({
     domain: domainAxisY || [0, maxY],
     range: [50, height - 50],
+    nice: true,
+    clamp: true,
   });
 
   const colorScale = scaleOrdinal<string, string>({
@@ -146,7 +107,7 @@ export const VerticalBarChart: FC<VerticalBarChartProps> = ({
   });
 
   const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
-    useTooltip<ITooltipTrendProps>();
+    useTooltip<TooltipContentProps>();
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
   });
@@ -175,11 +136,16 @@ export const VerticalBarChart: FC<VerticalBarChartProps> = ({
             top={50}
             left={refinedPadding.left - 18}
             scale={objectScale}
-            numTicks={5}
             strokeWidth={0}
             hideTicks
-            tickFormat={(v) => scaleFormat[scale].replace('{v}', formatDataByScale(scale, v))}
-            tickComponent={TickPlain}
+            tickComponent={(v) => {
+              if (!conf?.axes?.y?.tickComponent) {
+                const { formattedValue, ...otherProps } = v;
+                return <text {...otherProps}>{formattedValue}</text>;
+              }
+              return <text dangerouslySetInnerHTML={{ __html: conf?.axes?.y?.tickComponent(v) }} />;
+            }}
+            tickFormat={(v) => conf?.axes?.y?.formatter ? conf?.axes?.y?.formatter(v, objectScale.ticks()) : v}
           />
         )}
 
@@ -187,7 +153,7 @@ export const VerticalBarChart: FC<VerticalBarChartProps> = ({
           scale={objectScale}
           width={width - refinedPadding.left - refinedPadding.right}
           height={10}
-          numTicks={5}
+          // numTicks={5}
           strokeDasharray="2,2"
           top={50}
           left={refinedPadding.left}
@@ -239,17 +205,16 @@ export const VerticalBarChart: FC<VerticalBarChartProps> = ({
 
                             showTooltip({
                               tooltipData: {
-                                label: bar.key,
-                                date: seriesTotal[barGroup.index]?.date,
-                                value: bar.value,
-                                dataSeries: seriesTotal.map((d: any) => ({
+                                item: {
+                                  label: bar.key,
+                                  date: seriesTotal[barGroup.index]?.date,
+                                  value: bar.value,
+                                },
+                                series: seriesTotal.map((d: any) => ({
                                   date: d?.date,
                                   value: parseFloat(d[bar.key]).toFixed(4),
                                 })),
-                                tickFormat,
-                                isScaled:isScaled,
-                                scale:scale,
-                                scaleFormat:scaleFormat,
+
                               },
                               tooltipTop: eventSvgCoords?.y,
                               tooltipLeft: left,
@@ -272,23 +237,19 @@ export const VerticalBarChart: FC<VerticalBarChartProps> = ({
           <AxisBottom
             top={height - refinedPadding.bottom + 15}
             left={0}
-            tickComponent={TickYear}
             scale={dateScale}
             stroke="transparent"
             tickStroke="transparent"
-            tickFormat={(v: any) =>
-              timeFormat(tickFormat.date)(
-                v.length === 6 ? new Date(v.substring(0, 4), parseInt(v.substring(4, 6)) - 1) : new Date(v),
-              )
-            }
             numTicks={20}
             hideAxisLine
-            tickLabelProps={() => ({
-              fill: '#000',
-              fontSize: 11,
-              textAnchor: 'middle',
-              width,
-            })}
+            tickComponent={(v) => {
+              if (!conf?.axes?.x?.tickComponent) {
+                const { formattedValue, ...otherProps } = v;
+                return <text {...otherProps}>{formattedValue}</text>;
+              }
+              return <text dangerouslySetInnerHTML={{ __html: conf?.axes?.x?.tickComponent(v) }} />;
+            }}
+            tickFormat={(v) => conf?.axes?.x?.formatter ? conf?.axes?.x?.formatter(v) : v}
           />
         )}
       </svg>
@@ -298,16 +259,7 @@ export const VerticalBarChart: FC<VerticalBarChartProps> = ({
           left={tooltipLeft}
           style={{ ...defaultStyles, boxShadow: 'none', padding: 0 }}
         >
-          <Tooltip
-            label={tooltipData.label}
-            date={tooltipData.date}
-            value={tooltipData.value}
-            dataSeries={tooltipData.dataSeries}
-            tickFormat={tickFormat}
-            isScaled={isScaled}
-            scale={scale}
-            scaleFormat={scaleFormat}
-          />
+          <div dangerouslySetInnerHTML={{ __html: conf ? conf?.tooltipContent(tooltipData) : '' }} />
         </TooltipInPortal>
       )}
     </div>

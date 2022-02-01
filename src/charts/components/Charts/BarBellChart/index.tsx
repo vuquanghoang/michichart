@@ -3,13 +3,11 @@ import styled from "styled-components";
 import { scaleBand, scaleLinear, scaleOrdinal } from "@visx/scale";
 import { GridColumns } from "@visx/grid";
 import { defaultConfig } from "../../../helpers";
-import { Label, TickPlain, TickYear } from "../../Axes";
-import { AxisLeft, AxisTop } from "@visx/axis";
+import { Label } from "../../Axes";
+import { AxisLeft, AxisTop } from '@visx/axis';
 import { DateValue } from "../LineChart";
-import { select, selectAll } from "d3-selection";
 import { defaultStyles, useTooltip, useTooltipInPortal } from "@visx/tooltip";
-import Tooltip, { ITooltipTrendProps } from "../../Tooltips/TooltipTrendv2";
-import { timeFormat } from "d3-time-format";
+import { TooltipContentProps } from '../../Tooltips/ToolipContent';
 import { BarStackHorizontal } from "@visx/shape";
 import { Group } from "@visx/group";
 import { localPoint } from "@visx/event";
@@ -20,6 +18,7 @@ export interface BarBellChartProps {
   series: any[];
   title: string | React.ReactNode;
   conf: {
+    axes?: any;
     keys: string[],
     width?: number,
     height?: number,
@@ -44,7 +43,7 @@ export interface BarBellChartProps {
     disabledItems: string[];
     tickFormat: object;
     isScaled: boolean;
-
+    tooltipContent?: any;
   },
 }
 
@@ -78,56 +77,8 @@ const Styled = styled.div`
   }
 `;
 
-const DataGroup = styled.g`
-  path {
-    position: relative;
-  }
-
-  path + g {
-    opacity: 0;
-  }
-
-  path:hover {
-    z-index: 1;
-  }
-
-  path:hover + g {
-    opacity: 1;
-  }
-`;
-
-
-const SCALE = {
-  N: "n",
-  K: "k",
-  M: "m",
-  B: "b"
-};
 
 let tooltipTimeout: number;
-
-const formatDataByScale = (scaleFormat, data) => {
-  const scale = Math.round(Math.log10(data));
-
-  let scaledData = data;
-
-  if (scale >= 9) {
-    scaledData = data / 1000000000;
-    return scaleFormat[SCALE.B].replace("{v}", scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2));
-  }
-
-  if (scale >= 6) {
-    scaledData = data / 1000000;
-    return scaleFormat[SCALE.M].replace("{v}", scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2));
-  }
-
-  if (scale >= 3) {
-    scaledData = data / 1000;
-    return scaleFormat[SCALE.K].replace("{v}", scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2));
-  }
-
-  return data;
-};
 
 export const BarBellChart: FC<BarBellChartProps> = ({
                                                       className = "",
@@ -136,7 +87,7 @@ export const BarBellChart: FC<BarBellChartProps> = ({
 
                                                     }) => {
   const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
-    useTooltip<ITooltipTrendProps>();
+    useTooltip<TooltipContentProps>();
 
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true
@@ -144,7 +95,6 @@ export const BarBellChart: FC<BarBellChartProps> = ({
   const getX = (d: DateValue) => d.value;
   const getY = (d: any) => d.date;
   const ref = useRef(null);
-  let scale = SCALE.N;
   const width = conf?.width ? conf?.width : defaultConfig.width;
   const height = conf?.height ? conf?.height : defaultConfig.height;
   const padding = {
@@ -155,17 +105,6 @@ export const BarBellChart: FC<BarBellChartProps> = ({
 
   };
   const disabledItems = conf?.disabledItems ? conf?.disabledItems : [];
-  const tickFormat = conf?.tickFormat ? {
-    ...defaultConfig.tickFormat,
-    ...conf?.tickFormat
-  } : defaultConfig.tickFormat;
-  const isScaled = conf?.isScaled ? conf?.isScaled : false;
-  const scaleFormat = conf?.scaleFormat ? conf?.scaleFormat : {
-    b: "",
-    m: "",
-    k: "",
-    n: ""
-  };
   const colors = conf.colors || [];
 
   const xAxisKeys = Array.from(new Set(series.reduce((result: number[], cur: any) => [...result, ...cur.data.map(d => Math.ceil(d?.date))], [])));
@@ -175,8 +114,6 @@ export const BarBellChart: FC<BarBellChartProps> = ({
     [cur.label]: Math.ceil(d?.value)
   }))
   ], []);
-
-  const precision = conf.precision ?? 2;
 
   const data = xAxisValuesFlatten1.reduce((result: any, cur: any) => {
     if (result?.[Object.keys(cur)[0]]) {
@@ -235,19 +172,7 @@ export const BarBellChart: FC<BarBellChartProps> = ({
     range: colors.map(d => Object.values(d)[0])
   });
 
-  const highlight = (node, index) => {
-    select(node.parentNode).raise();
-    select(node.parentNode.parentNode).raise();
-
-    selectAll(`${className ? `.${className}` : ""} .data-point`).each(function() {
-      (this as HTMLElement)?.classList.remove("highlight");
-    });
-
-    selectAll(`${className ? `.${className}` : ""} .data-point-${index}`).each(function() {
-      (this as HTMLElement)?.classList.add("highlight");
-    });
-  };
-
+  // @ts-ignore
   return (
     <Styled>
       <svg
@@ -260,7 +185,7 @@ export const BarBellChart: FC<BarBellChartProps> = ({
         ref={containerRef}
       >
         <g>
-          <rect x={0} y={0} width={width} height={height} fill="#fff" />
+          {width > 0 && <rect x={0} y={0} width={width} height={height} fill="#fff" />}
           {conf?.axesLabel?.x && (
             <Label x={5} y={padding.top - 8}>
               {conf?.axesLabel?.x}
@@ -285,8 +210,14 @@ export const BarBellChart: FC<BarBellChartProps> = ({
           scale={xScale}
           stroke="transparent"
           hideTicks
-          tickComponent={TickPlain}
-          tickFormat={(v) => formatDataByScale(scaleFormat, v)}
+          tickComponent={(v) => {
+            if (!conf?.axes?.x?.tickComponent) {
+              const { formattedValue, ...otherProps } = v;
+              return <text {...otherProps}>{formattedValue}</text>;
+            }
+            return <text dangerouslySetInnerHTML={{__html: conf?.axes?.x?.tickComponent(v)}}/>
+          }}
+          tickFormat={(v) => conf?.axes?.x?.formatter ? conf?.axes?.x?.formatter(v) : v}
         />
 
         <AxisLeft
@@ -294,21 +225,16 @@ export const BarBellChart: FC<BarBellChartProps> = ({
           left={padding.left - 15}
           scale={yScale}
           stroke="transparent"
-          tickComponent={(props) => <TickYear dotAlignment={"right"} {...props} />}
           hideTicks
           numTicks={yAxisValues.length}
-          tickFormat={(v: any) => {
-            const formattedV = v.toString();
-            return timeFormat(tickFormat?.date)(
-              formattedV.length === 6 ? new Date(formattedV.substring(0, 4), parseInt(formattedV.substring(4, 6)) - 1) : new Date(formattedV)
-            );
+          tickFormat={(v) => conf?.axes?.y?.formatter ? conf?.axes?.y?.formatter(v) : v}
+          tickComponent={(v) => {
+            if (!conf?.axes?.y?.tickComponent) {
+              const { formattedValue, ...otherProps } = v;
+              return <text {...otherProps}>{formattedValue}</text>;
+            }
+            return <text dangerouslySetInnerHTML={{__html: conf?.axes?.y?.tickComponent(v)}}/>
           }}
-          tickLabelProps={() => ({
-            fill: "#000",
-            fontSize: 11,
-            textAnchor: "middle",
-            width
-          })}
         />
 
         <Group top={0} left={padding.left}>
@@ -328,18 +254,12 @@ export const BarBellChart: FC<BarBellChartProps> = ({
 
                            showTooltip({
                              tooltipData: {
-                               label: bar.key,
-                               date: bar.bar.data.date,
-                               // date:
-                                 // bar.bar.data.date.length === 6 ? new Date(bar.bar.data.date.substring(0, 4), parseInt(bar.bar.data.date.substring(4, 6)) - 1) : new Date(bar.bar.data.date),
-                               // ),
-                               value: bar.bar.data[bar.key],
-                               dataSeries: series.find(d => d.label === bar.key).data,
-                               tickFormat,
-                               isScaled: isScaled,
-                               scale: scale,
-                               scaleFormat: scaleFormat,
-
+                               item: {
+                                 label: bar.key,
+                                 date: bar.bar.data.date,
+                                 value: bar.bar.data[bar.key],
+                               },
+                               series: series,
                              },
                              tooltipTop: eventSvgCoords?.y,
                              tooltipLeft: eventSvgCoords?.x
@@ -352,15 +272,15 @@ export const BarBellChart: FC<BarBellChartProps> = ({
                          }}
                   >
                   {bar.width > 0 && <circle cx={bar.x} cy={bar.y + bar.height / 2 - 5} r={5} fill={bar.color} />}
-                    <rect
+                  {bar.width > 0 && <rect
                       x={bar.x}
                       y={bar.y + bar.height / 2 - 5}
                       width={bar.width}
                       height={2}
                       fill={bar.color}
 
-                      // onMouseMove={() => {}
                     />
+                  }
                   </Group>
                 ))
               )
@@ -368,23 +288,14 @@ export const BarBellChart: FC<BarBellChartProps> = ({
           </BarStackHorizontal>
         </Group>
       </svg>
-      {tooltipOpen && tooltipData && (
+      {tooltipOpen && tooltipData && conf?.tooltipContent && (
         <TooltipInPortal
           top={tooltipTop}
           left={tooltipLeft}
-          style={{ ...defaultStyles, boxShadow: "none", padding: 0 }}
+          style={{ ...defaultStyles, boxShadow: 'none', padding: 0 }}
         >
-          <Tooltip
-            label={tooltipData.label}
-            date={tooltipData.date}
-            value={tooltipData.value}
-            dataSeries={tooltipData.dataSeries}
-            isScaled={isScaled}
-            scale={scale}
-            scaleFormat={scaleFormat}
-            tickFormat={tickFormat}
-            precision={precision}
-          />
+          {/*// @ts-ignore*/}
+          <div dangerouslySetInnerHTML={{ __html: conf?.tooltipContent(tooltipData) }} />
         </TooltipInPortal>
       )}
     </Styled>

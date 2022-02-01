@@ -1,0 +1,112 @@
+[
+  {
+    "label": "South Africa",
+    "color": "pink",
+    "isDisabled": false,
+    "data": [
+      {
+        "date": "Jan",
+        "value": 5
+      },
+      {
+        "date": "Feb",
+        "value": 4
+      },
+      {
+        "date": "Mar",
+        "value": 30
+      },
+      {
+        "date": "Apr",
+        "value": 10
+      },
+      {
+        "date": "May",
+        "value": 7
+      },
+      {
+        "date": "Jun",
+        "value": 2
+      },
+      {
+        "date": "Jul",
+        "value": 29
+      },
+      {
+        "date": "Aug",
+        "value": 30
+      },
+      {
+        "date": "0Sep9",
+        "value": 26
+      },
+      {
+        "date": "Oct",
+        "value": 27
+      },
+      {
+        "date": "Nov",
+        "value": 4
+      },
+      {
+        "date": "Dec",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "label": "North Africa",
+    "color": "#eee",
+    "isDisabled": true,
+    "data": [
+      {
+        "date": "Jan",
+        "value": 25
+      },
+      {
+        "date": "Feb",
+        "value": 14
+      },
+      {
+        "date": "Mar",
+        "value": 3
+      },
+      {
+        "date": "Apr",
+        "value": 11
+      },
+      {
+        "date": "May",
+        "value": null
+      },
+      {
+        "date": "Jun",
+        "value": null
+      },
+      {
+        "date": "Jul",
+        "value": 9
+      },
+      {
+        "date": "Aug",
+        "value": 3
+      },
+      {
+        "date": "Sep",
+        "value": 26
+      },
+      {
+        "date": "Oct",
+        "value": 27
+      },
+      {
+        "date": "Nov",
+        "value": 4
+      },
+      {
+        "date": "Dec",
+        "value": 10
+      }
+    ]
+  }
+]

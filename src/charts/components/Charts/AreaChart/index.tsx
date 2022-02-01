@@ -4,22 +4,14 @@ import { scaleBand, scaleLinear } from '@visx/scale';
 import { AreaStack } from '@visx/shape';
 import { curveMonotoneX } from '@visx/curve';
 import { AxisBottom, AxisLeft } from '@visx/axis';
-import { timeFormat } from 'd3-time-format';
 import { GridRows } from '@visx/grid';
 import { defaultStyles, useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 import { defaultConfig } from '../../../helpers';
-import { Label, TickPlain, TickYear } from '../../Axes';
-import Tooltip, { ITooltipTrendProps } from '../../Tooltips/TooltipTrend';
+import { Label } from '../../Axes';
+import { TooltipContentProps } from '../../Tooltips/ToolipContent';
 import { extent } from 'd3-array';
 import sum from 'lodash/sum';
-
-const SCALE = {
-  N: 'n',
-  K: 'k',
-  M: 'm',
-  B: 'b',
-};
 
 const Styled = styled.div`
   contain: layout;
@@ -83,7 +75,9 @@ export interface AreaChartProps {
     k: string;
     n: string;
   };
+  conf?: any;
 }
+
 
 export const AreaChart: FC<AreaChartProps> = ({
   className = '',
@@ -100,17 +94,9 @@ export const AreaChart: FC<AreaChartProps> = ({
     ...defaultConfig.tickFormat,
     value: '{v}%',
   },
-  tooltip = null,
-  tooltipDefaultStyle = true,
   dataKeys = [],
   colors = {},
-  isScaled = false,
-  scaleFormat = {
-    b: '',
-    m: '',
-    k: '',
-    n: '',
-  },
+  conf = {},
 }) => {
   const config = {
     padding: {
@@ -119,7 +105,7 @@ export const AreaChart: FC<AreaChartProps> = ({
     },
   };
   const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
-    useTooltip<ITooltipTrendProps>();
+    useTooltip<TooltipContentProps>();
 
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
@@ -191,33 +177,6 @@ export const AreaChart: FC<AreaChartProps> = ({
     range: [height - config.padding.bottom, config.padding.top],
   });
 
-  let scale = SCALE.N;
-  const maxY = Math.max(...yAxisValues);
-  if (Math.abs(maxY) >= 1e9) {
-    scale = SCALE.B;
-  } else if (Math.abs(maxY) >= 1e6) {
-    scale = SCALE.M;
-  } else if (Math.abs(maxY) >= 1e3) {
-    scale = SCALE.K;
-  }
-
-  const formatDataByScale = (scale, data) => {
-    let scaledData = data;
-    switch (scale) {
-      case SCALE.B:
-        scaledData = data / 1000000000;
-        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
-      case SCALE.M:
-        scaledData = data / 1000000;
-        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
-      case SCALE.K:
-        scaledData = data / 1000;
-        return scaledData.toFixed(Number.isInteger(scaledData) ? 0 : 2);
-      default:
-        return data;
-    }
-  };
-
   return (
     <Styled>
       <svg
@@ -239,8 +198,15 @@ export const AreaChart: FC<AreaChartProps> = ({
             scale={yScale}
             stroke="transparent"
             hideTicks
-            tickComponent={TickPlain}
-            tickFormat={(v) => scaleFormat[scale].replace('{v}', formatDataByScale(scale, v))}
+            tickFormat={(v) => conf?.axes?.y?.formatter ? conf?.axes?.y?.formatter(v) : v}
+            tickComponent={(v) => {
+              if (!conf?.axes?.y?.tickComponent) {
+                const { formattedValue, ...otherProps } = v;
+                return <text {...otherProps}>{formattedValue}</text>;
+              }
+              return <text dangerouslySetInnerHTML={{__html: conf?.axes?.y?.tickComponent(v)}}/>
+            }
+            }
           />
         )}
         {showAxisX && (
@@ -249,20 +215,15 @@ export const AreaChart: FC<AreaChartProps> = ({
             left={0}
             scale={xScale}
             stroke="transparent"
-            tickComponent={TickYear}
             hideTicks
-            // numTicks={xAxisValues.length}
-            tickFormat={(v: any) =>
-              timeFormat(tickFormat.date)(
-                v.length === 6 ? new Date(v.substring(0, 4), parseInt(v.substring(4, 6)) - 1) : new Date(v),
-              )
-            }
-            tickLabelProps={() => ({
-              fill: '#000',
-              fontSize: 11,
-              textAnchor: 'middle',
-              width,
-            })}
+            tickComponent={(v) => {
+              if (!conf?.axes?.x?.tickComponent) {
+                const { formattedValue, ...otherProps } = v;
+                return <text {...otherProps}>{formattedValue}</text>;
+              }
+              return <text dangerouslySetInnerHTML={{__html: conf?.axes?.x?.tickComponent(v)}}/>
+            }}
+            tickFormat={(v) => conf?.axes?.x?.formatter ? conf?.axes?.x?.formatter(v) : v}
           />
         )}
         <GridRows
@@ -322,17 +283,13 @@ export const AreaChart: FC<AreaChartProps> = ({
                           const left = xScale(getDate(point));
                           showTooltip({
                             tooltipData: {
-                              label: stack.key,
-                              date: getDate(point),
-                              value: point.data[stack.key],
-                              dataSeries: seriesData.map((d) => ({
-                                date: d.date,
-                                value: d[stack.key],
-                              })),
-                              tickFormat,
-                              isScaled:isScaled,
-                              scale:scale,
-                              scaleFormat:scaleFormat,
+                              item: {
+                                label: stack.key,
+                                date: getDate(point),
+                                value: point.data[stack.key],
+                                data: point.data,
+                              },
+                              series: seriesData,
                             },
                             tooltipTop: eventSvgCoords?.y,
                             tooltipLeft: left,
@@ -347,22 +304,13 @@ export const AreaChart: FC<AreaChartProps> = ({
           </AreaStack>
         </g>
       </svg>
-      {tooltipOpen && tooltipData && (
+      {tooltipOpen && tooltipData && conf?.tooltipContent && (
         <TooltipInPortal
           top={tooltipTop}
           left={tooltipLeft}
           style={{ ...defaultStyles, boxShadow: 'none', padding: 0 }}
         >
-          <Tooltip
-            label={tooltipData.label}
-            date={tooltipData.date}
-            value={tooltipData.value}
-            dataSeries={tooltipData.dataSeries}
-            tickFormat={tickFormat}
-            isScaled={isScaled}
-            scale={scale}
-            scaleFormat={scaleFormat}
-          />
+          <div dangerouslySetInnerHTML={{ __html: conf?.tooltipContent(tooltipData) }} />
         </TooltipInPortal>
       )}
     </Styled>

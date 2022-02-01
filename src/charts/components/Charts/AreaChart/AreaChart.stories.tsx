@@ -42,12 +42,33 @@ Yearly.args = {
     "Semi-processed": "green",
     Raw: "blue"
   },
-  isScaled:true,
-  scaleFormat:{
-    b: '$ {v}b',
-    m: '$ {v}m',
-    k: '$ {v}k',
-    n: '$ {v}',
+  conf: {
+    tooltipContent: ({item, series}) => `<div>${JSON.stringify(item)}</div>`,
+    axes: {
+      y: {
+        style: {
+          position: 'relative',
+          fontFamily: 'var(--font-sans-serif-primary)',
+          fontSize: '0.8em',
+          fontWeight: 'bold',
+          fill: '#7e7a7a',
+          textAnchor: 'start'
+        },
+        formatter: (value) =>  {
+          return new Intl.NumberFormat('en-US', { notation: "compact",
+            compactDisplay: "short"}).format(value)
+        },
+      },
+      x: {
+        style: {
+
+        },
+        formatter: (value) => value,
+        tickComponent: (value) => {
+          return `<tspan text-anchor="middle" x=${value.x} y=${value.y}>${value.formattedValue}</tspan>`
+        }
+      }
+    },
   },
 };
 
@@ -86,5 +107,33 @@ Monthly.args = {
     m: '$ {v}m',
     k: '$ {v}k',
     n: '$ {v}',
+  },
+  conf: {
+    tooltipContent: ({item, series}) => `<div>${JSON.stringify(item)}</div>`,
+    axes: {
+      y: {
+        style: {
+          position: 'relative',
+          fontFamily: 'var(--font-sans-serif-primary)',
+          fontSize: '0.8em',
+          fontWeight: 'bold',
+          fill: '#7e7a7a',
+          textAnchor: 'start'
+        },
+        formatter: (value) =>  {
+          return new Intl.NumberFormat('en-US', { notation: "compact",
+            compactDisplay: "short"}).format(value)
+        },
+      },
+      x: {
+        style: {
+
+        },
+        formatter: (value) => value,
+        tickComponent: (value) => {
+          return `<tspan text-anchor="middle" x=${value.x} y=${value.y}>${value.formattedValue}</tspan>`
+        }
+      }
+    },
   },
 };

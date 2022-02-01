@@ -25,10 +25,22 @@ Primary.args = {
   domainAxisY: null,
   showAxisX: true,
   showAxisY: true,
-  tickFormat: {
-    value: '${v} mn',
-    date: '%Y',
-    scale: 'mn',
-  },
   direction: 'ltr',
+  conf: {
+    tooltipContent: ({item, series}) => {
+      console.log(series)
+      return `<div>${JSON.stringify(item)}</div>`
+    },
+    axes: {
+      y: {
+        formatter: (value) =>  value,
+      },
+      x: {
+        formatter: (value) => value,
+        tickComponent: (value) => {
+          return `<tspan x=${value.x} y=${value.y}>${value.formattedValue}</tspan>`
+        }
+      }
+    },
+  },
 };

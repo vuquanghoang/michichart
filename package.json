@@ -1,6 +1,6 @@
 {
   "name": "michi-charts",
-  "version": "0.0.128",
+  "version": "0.0.141",
   "author": "wildnessy",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
@@ -46,6 +46,7 @@
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.28.0",
     "lodash": "^4.17.21",
     "postcss": "^8.3.5",
     "prettier": "^2.3.2",

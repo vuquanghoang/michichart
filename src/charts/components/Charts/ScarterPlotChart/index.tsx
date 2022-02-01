@@ -7,12 +7,11 @@ import { GridColumns, GridRows } from '@visx/grid';
 import { defaultStyles, useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { localPoint } from '@visx/event';
-import { defaultConfig } from '../../../helpers';
 import { Label, TickPlain } from '../../Axes';
-import Tooltip, { ITooltipContentProps } from '../../Tooltips/ToolipContent';
+import { TooltipContentProps } from '../../Tooltips/ToolipContent';
 
 const Styled = styled.div`
-  contain: layout;z
+  contain: layout;
 `;
 
 const LegendTitle = styled.div`
@@ -89,39 +88,31 @@ export interface ScatterPlotChartProps {
   axisYLbl?: string | ReactNode | null;
   tickFormat: { value: string; valueSize?: string; date: string; currency?: string; scale?: string };
   legendTitle?: string | ReactNode | null;
-  tooltip: string | ReactNode | null;
-  tooltipDefaultStyle: boolean;
+  conf?: any;
 }
 
 export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
-  className = '',
-  width = 900,
-  height = 500,
-  seriesData = [],
-  padding = {
-    top: 50,
-    right: 50,
-    bottom: 50,
-    left: 50,
-  },
-  domainAxisY = null,
-  domainAxisX = null,
-  axisYLbl = '',
-  axisXLbl = '',
-  legendTitle = null,
-  showAxisX = true,
-  showAxisY = true,
-  tickFormat = {
-    ...defaultConfig.tickFormat,
-    value: '{v}%',
-    valueSize: '${v}',
-    scale: '',
-  },
-  tooltip = null,
-  tooltipDefaultStyle = true,
-}) => {
+                                                              className = '',
+                                                              width = 900,
+                                                              height = 500,
+                                                              seriesData = [],
+                                                              padding = {
+                                                                top: 50,
+                                                                right: 50,
+                                                                bottom: 50,
+                                                                left: 50,
+                                                              },
+                                                              domainAxisY = null,
+                                                              domainAxisX = null,
+                                                              axisYLbl = '',
+                                                              axisXLbl = '',
+                                                              legendTitle = null,
+                                                              showAxisX = true,
+                                                              showAxisY = true,
+                                                              conf = {},
+                                                            }) => {
   const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
-    useTooltip<ITooltipContentProps>();
+    useTooltip<TooltipContentProps>();
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
     detectBounds: true,
@@ -147,6 +138,7 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
     nice: true,
     clamp: true,
   });
+
 
   return (
     <Styled>
@@ -180,9 +172,9 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
         />
 
         {seriesData &&
-          orderBy(seriesData, ['d'], ['desc']).map((d, i) => (
-            <>
-              <div className="tt">{diameterScale(d.d) }</div>
+        orderBy(seriesData, ['d'], ['desc']).map((d, i) => (
+          <>
+            <div className="tt">{diameterScale(d.d)}</div>
             <circle
               className={`dot dot-${d?.code ? d.code : ''}`}
               key={`circle-${i}`}
@@ -203,34 +195,17 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
 
                 showTooltip({
                   tooltipData: {
-                    useDefaultStyle: tooltipDefaultStyle,
-                    title: d.label,
-                    content: (
-                      <ul style={{ padding: '0 20px' }}>
-                        <li>
-                          <b>Trade value:</b>
-                          {d.d}
-                          {tickFormat.scale}
-                        </li>
-                        <li>
-                          <b>{axisYLbl}:</b>
-                          {`${d.y}%`}
-                        </li>
-                        <li>
-                          <b>{axisXLbl}:</b>
-                          {`${d.x}%`}
-                        </li>
-                      </ul>
-                    ),
+                    item: { ...d },
+                    series: orderBy(seriesData, ['d'], ['desc']),
                   },
                   tooltipTop: eventSvgCoords?.y,
                   tooltipLeft: left,
                 });
               }}
             />
-            </>
-          ))}
-        {seriesData.length > 0 && (
+          </>
+        ))}
+        {conf?.legend?.isEnabled === true && seriesData.length > 0 && (
           <g>
             <foreignObject x={width - 180} y={50} width={170} height={200} style={{ pointerEvents: 'none' }}>
               <LegendTitle>{legendTitle}</LegendTitle>
@@ -258,9 +233,9 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
                       transform: 'translateY(25%)',
                     }}
                   >
-                    0
+                    &#x2265; 0
                   </LegendText>
-                  {diameterScale.range().map((d, i) => (
+                  {diameterScale.quantiles().map((d, i) => (
                     <LegendText
                       key={`td-${i}`}
                       style={{
@@ -268,9 +243,12 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
                       }}
                     >
                       {i % 2 === 0 ? (
-                        <>
-                          &#x2265; {d?.toFixed(0)} {tickFormat?.scale || 0}
-                        </>
+                        <span style={{whiteSpace: "nowrap"}}>
+                          {/* @ts-ignore*/}
+                          &#x2265;&nbsp;
+                          {conf?.legend?.value?.formatter && <>{conf?.legend?.value?.formatter(d)}</>}
+                          {!conf?.legend?.value?.formatter && <>{d}</>}
+                        </span>
                       ) : (
                         ''
                       )}
@@ -289,7 +267,7 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
             stroke="transparent"
             hideTicks
             tickComponent={TickPlain}
-            tickFormat={(v) => tickFormat.value.replace('{v}', String(v))}
+            // tickFormat={(v) => tickFormat.value.replace('{v}', String(v))}
           />
         )}
         {showAxisX && (
@@ -300,21 +278,17 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
             stroke="transparent"
             tickComponent={TickPlain}
             hideTicks
-            tickFormat={(v) => tickFormat.value.replace('{v}', String(v))}
+            // tickFormat={(v) => tickFormat.value.replace('{v}', String(v))}
           />
         )}
       </svg>
-      {tooltipOpen && tooltipData && (
+      {tooltipOpen && tooltipData && conf?.tooltipContent && (
         <TooltipInPortal
           top={tooltipTop}
           left={tooltipLeft}
           style={{ ...defaultStyles, boxShadow: 'none', padding: 0 }}
         >
-          <Tooltip
-            title={tooltipData.title}
-            content={tooltipData.content}
-            useDefaultStyle={tooltipData.useDefaultStyle}
-          />
+          <div dangerouslySetInnerHTML={{ __html: conf ? conf?.tooltipContent(tooltipData) : '' }} />
         </TooltipInPortal>
       )}
     </Styled>

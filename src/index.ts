@@ -6,6 +6,7 @@ export { AreaChart } from './charts/components/Charts/AreaChart';
 export { default as LineAndVerticalBarChart } from './charts/components/Charts/LineAndVerticalBarChart';
 export { LineChartAdvanced } from "./charts/components/Charts/LineChartAdvanced";
 export { BarBellChart } from "./charts/components/Charts/BarBellChart";
+export { RadarChart } from './charts/components/Charts/RadarChart';
 // export { default as Filter } from './charts/components/Ui/Selection';
 export { default as VzTheme } from './themes/primary/index';
 // export { SearchBox, Summary, SuggestedList, SelectedItems, NestedTree, FlattenTree } from './charts/components/Filter';

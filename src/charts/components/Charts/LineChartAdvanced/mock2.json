@@ -1,6 +1,6 @@
 [
   {
-    "color": "#8de9f2",
+    "color": "red",
     "dataPoint": {
       "visibility": "on",
       "shape": "cross"
@@ -58,7 +58,7 @@
     ]
   },
   {
-    "color": "#82bfea",
+    "color": "orange",
     "dataPoint": {
       "visibility": "on",
       "shape": "circle"

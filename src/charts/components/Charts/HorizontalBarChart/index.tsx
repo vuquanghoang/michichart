@@ -2,11 +2,9 @@ import React, { FC, useRef } from 'react';
 import { Bar } from '@visx/shape';
 import styled from 'styled-components';
 import { PatternLines } from '@visx/pattern';
-import { defaultConfig } from '../../../helpers';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft } from '@visx/axis';
-import { TickPlain, TickYear } from '../../Axes';
-import Tooltip, { ITooltipContentProps } from '../../Tooltips/ToolipContent';
+import { TooltipContentProps } from '../../Tooltips/ToolipContent';
 import { defaultStyles, useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 import { GridColumns } from '@visx/grid';
@@ -74,32 +72,29 @@ export interface HorizontalBarChartProps {
   domainAxisY?: number[] | null;
   showAxisX: boolean;
   showAxisY: boolean;
-  tickFormat: { value: string; date: string; currency?: string; scale?: string };
   direction: 'rtl' | 'ltr';
+  conf?: any;
 }
 
 export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
-  className = '',
-  width = 900,
-  height = 500,
-  seriesData = [],
-  padding = {
-    top: 50,
-    right: 50,
-    bottom: 50,
-    left: 50,
-  },
-  domainAxisX = null,
-  showAxisX = true,
-  showAxisY = true,
-  tickFormat = {
-    ...defaultConfig.tickFormat,
-    value: '{v}',
-  },
-  direction = 'ltr',
-}) => {
+                                                                  className = '',
+                                                                  width = 900,
+                                                                  height = 500,
+                                                                  seriesData = [],
+                                                                  padding = {
+                                                                    top: 50,
+                                                                    right: 50,
+                                                                    bottom: 50,
+                                                                    left: 50,
+                                                                  },
+                                                                  domainAxisX = null,
+                                                                  showAxisX = true,
+                                                                  showAxisY = true,
+                                                                  direction = 'ltr',
+                                                                  conf = {},
+                                                                }) => {
   const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
-    useTooltip<ITooltipContentProps>();
+    useTooltip<TooltipContentProps>();
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
     detectBounds: true,
@@ -156,10 +151,16 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
             top={0}
             left={padding.left - 30 || 0}
             scale={yScale}
-            tickFormat={(v) => String(v)}
             stroke="transparent"
             hideTicks
-            tickComponent={TickPlain}
+            tickFormat={(v) => conf?.axes?.y?.formatter ? conf?.axes?.y?.formatter(v) : v}
+            tickComponent={(v) => {
+              if (!conf?.axes?.y?.tickComponent) {
+                const { formattedValue, ...otherProps } = v;
+                return <text {...otherProps}>{formattedValue}</text>;
+              }
+              return <text dangerouslySetInnerHTML={{ __html: conf?.axes?.y?.tickComponent(v) }} />;
+            }}
           />
         )}
         {showAxisX && (
@@ -167,8 +168,14 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
             top={height - (padding.bottom || 0)}
             scale={xScale}
             stroke="transparent"
-            tickComponent={TickYear}
-            tickFormat={(v) => tickFormat.value.replace('{v}', String(v))}
+            tickComponent={(v) => {
+              if (!conf?.axes?.x?.tickComponent) {
+                const { formattedValue, ...otherProps } = v;
+                return <text {...otherProps}>{formattedValue}</text>;
+              }
+              return <text dangerouslySetInnerHTML={{ __html: conf?.axes?.x?.tickComponent(v) }} />;
+            }}
+            tickFormat={(v) => conf?.axes?.x?.formatter ? conf?.axes?.x?.formatter(v, xScale.ticks()) : v}
             hideTicks
           />
         )}
@@ -213,46 +220,8 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
 
                   showTooltip({
                     tooltipData: {
-                      useDefaultStyle: true,
-                      title: '',
-                      content: (
-                        <TooltipStyled>
-                          <div className="total">
-                            <em>
-                              {!tickFormat.value.includes('%') && (
-                                <>
-                                  {tickFormat.currency}
-                                  {Number(d?.valueTotal).toFixed(2)}
-                                  {" "}
-                                  {tickFormat.scale}
-                                </>
-                              )}
-                              {tickFormat.value.includes('%') && (
-                                <>
-                                  {tickFormat.currency}
-                                  {Number(d?.valueTotal / 1000000).toFixed(2)}
-                                  mn
-                                </>
-                              )}
-                            </em>
-                            <span>Export Potential</span>
-                            <small>out of which</small>
-                          </div>
-                          <div className="remaining">
-                            <b>
-                              {tickFormat.value.includes('%') && <small>{d?.valueRemaining}% is unrealized</small>}
-                              {!tickFormat.value.includes('%') && (
-                                <>
-                                  ${d?.valueRemaining?.toFixed(2)} {" "} {tickFormat.scale ? tickFormat.scale : ''}
-                                  <small>
-                                    ({Number((d?.valueRemaining / d?.valueTotal) * 100).toFixed(0)}%) is unrealized
-                                  </small>
-                                </>
-                              )}
-                            </b>
-                          </div>
-                        </TooltipStyled>
-                      ),
+                      item: d,
+                      series: seriesData,
                     },
                     tooltipTop: eventSvgCoords?.y,
                     tooltipLeft: eventSvgCoords?.x,
@@ -283,17 +252,13 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
         />
       </svg>
 
-      {tooltipOpen && tooltipData && (
+      {tooltipOpen && tooltipData && conf?.tooltipContent && (
         <TooltipInPortal
           top={tooltipTop}
           left={tooltipLeft}
           style={{ ...defaultStyles, boxShadow: 'none', padding: 0 }}
         >
-          <Tooltip
-            title={tooltipData.title}
-            content={tooltipData.content}
-            useDefaultStyle={tooltipData.useDefaultStyle}
-          />
+          <div dangerouslySetInnerHTML={{ __html: conf?.tooltipContent(tooltipData) }} />
         </TooltipInPortal>
       )}
     </Styled>

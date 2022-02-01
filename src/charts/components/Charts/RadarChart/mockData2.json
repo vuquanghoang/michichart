@@ -1,0 +1,136 @@
+[
+  {
+    "label": "All Africa",
+    "color": "#1F77B4",
+    "data": [
+      {
+        "region_j": "1001",
+        "value": "707.2",
+        "date": "Jan"
+      },
+      {
+        "region_j": "1001",
+        "value": "721.344",
+        "date": "Feb"
+      },
+      {
+        "region_j": "1001",
+        "value": "735.77088",
+        "date": "Mar"
+      },
+      {
+        "region_j": "1001",
+        "value": "750.4862976",
+        "date": "Apr"
+      },
+      {
+        "region_j": "1001",
+        "value": "765.4960236",
+        "date": "May"
+      },
+      {
+        "region_j": "1001",
+        "value": "780.805944",
+        "date": "Jun"
+      },
+      {
+        "region_j": "1001",
+        "value": "796.4220629",
+        "date": "Jul"
+      },
+      {
+        "region_j": "1001",
+        "value": "812.3505042",
+        "date": "Aug"
+      },
+      {
+        "region_j": "1001",
+        "value": "828.5975142",
+        "date": "Sep"
+      },
+      {
+        "region_j": "1001",
+        "value": "845.1694645",
+        "date": "Oct"
+      },
+      {
+        "region_j": "1001",
+        "value": "862.0728538",
+        "date": "Nov"
+      },
+      {
+        "region_j": "1001",
+        "value": "832",
+        "date": "Dec"
+      }
+    ],
+    "partner": "1001"
+  },
+  {
+    "label": "Rest of the world",
+    "color": "#17BECF",
+    "data": [
+      {
+        "region_j": "1002",
+        "value": "734.672",
+        "date": "Jan"
+      },
+      {
+        "region_j": "1002",
+        "value": "749.36544",
+        "date": "Feb"
+      },
+      {
+        "region_j": "1002",
+        "value": "764.3527488",
+        "date": "Mar"
+      },
+      {
+        "region_j": "1002",
+        "value": "779.6398038",
+        "date": "Apr"
+      },
+      {
+        "region_j": "1002",
+        "value": "795.2325999",
+        "date": "May"
+      },
+      {
+        "region_j": "1002",
+        "value": "811.1372518",
+        "date": "Jun"
+      },
+      {
+        "region_j": "1002",
+        "value": "827.3599969",
+        "date": "Jul"
+      },
+      {
+        "region_j": "1002",
+        "value": "843.9071968",
+        "date": "Aug"
+      },
+      {
+        "region_j": "1002",
+        "value": "860.7853408",
+        "date": "Sep"
+      },
+      {
+        "region_j": "1002",
+        "value": "878.0010476",
+        "date": "Oct"
+      },
+      {
+        "region_j": "1002",
+        "value": "895.5610685",
+        "date": "Nov"
+      },
+      {
+        "region_j": "1002",
+        "value": "1614.041341",
+        "date": "Dec"
+      }
+    ],
+    "partner": "1002"
+  }
+]

@@ -1,31 +1,4 @@
-import React, { FC, ReactNode } from 'react';
-import { Label, TooltipStyled } from './Styled';
-
-export interface ITooltipContentProps {
-  useDefaultStyle: boolean;
-  title: ReactNode | string | null;
-  content: ReactNode | string | null;
+export type TooltipContentProps = {
+  item: any;
+  series: any[];
 }
-
-const TooltipContent: FC<ITooltipContentProps> = ({
-  useDefaultStyle = true,
-  title = null,
-  content = null,
-}) => {
-  if (useDefaultStyle) {
-    return (
-      <TooltipStyled>
-        {title && <Label>{title}</Label>}
-        {content && <div>{content}</div>}
-      </TooltipStyled>
-    );
-  }
-  return (
-    <>
-      {title && <Label>{title}</Label>}
-      {content && <div>{content}</div>}
-    </>
-  );
-};
-
-export default TooltipContent;
