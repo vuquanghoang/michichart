@@ -16,7 +16,6 @@ export const Primary = Template.bind({});
 Primary.args = {
   className: '',
   series1: mockData,
-  // series2: F,
   series2Total: mockData2Total,
   series2: [{
     data: mockData2,

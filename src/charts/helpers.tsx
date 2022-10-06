@@ -16,7 +16,7 @@ export const defaultConfig = {
 };
 
 
-export const getPolygonString = (x, y, size) => {
+export const getPolygonString = (x: any, y: any, size: number) => {
   const roundedX = parseInt(x);
   const roundedY = parseInt(y);
 

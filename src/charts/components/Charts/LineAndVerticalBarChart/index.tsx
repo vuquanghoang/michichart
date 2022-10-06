@@ -32,7 +32,7 @@ export interface LineAndVerticalBarChartProps {
       bottom: number,
       left: number,
     },
-    scaleFormat: {
+ /*   scaleFormat: {
       b: string,
       m: string,
       k: string,
@@ -41,7 +41,7 @@ export interface LineAndVerticalBarChartProps {
     colors: object;
     disabledItems: string[];
     tickFormat: object;
-    isScaled: boolean;
+    isScaled: boolean;*/
   },
 }
 

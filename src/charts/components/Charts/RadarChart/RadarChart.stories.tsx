@@ -13,33 +13,36 @@ const Template: Story<RadarChartProps> = (args) => <RadarChart {...args} />;
 
 export const Primary = Template.bind({});
 Primary.args = {
-  width: 500,
-  height: 500,
+  width: 360,
+  height: 360,
   seriesData: mockData2,
   // seriesData: mockData,
   conf: {
-    padding: 50,
+    padding: 30,
     gridAngleLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    tooltipContent: ({label, date, value}) => `<div>${label}</div><div>${date}: ${value}</div>`,
+    tooltipContent: ({item}) => (
+      <>
+        {JSON.stringify(item)}
+      </>),
     radialScale: {
       range: [0, Math.PI * 3],
-      domain: [360, 0]
+      domain: [360, 0],
     },
     yScale: {
-      domain: [0 , 1680]
+      domain: [0, Math.max(...(mockData2.map(d => d.data).flat().map(d => d.value)))],
     },
     gridAngle: {
       style: {
         stroke: '#c1c1c1',
         strokeWidth: 1,
       },
-      numTicks: 12
+      numTicks: 12,
     },
     gridRadial: {
       style: {
         stroke: '#c1c1c1',
-        strokeWidth: 1,
-        numTicks: undefined,
+        strokeWidth: 0,
+        numTicks: 5,
         fill: 'transparent',
         fillOpacity: 0,
         strokeDasharray: '2,2',
@@ -48,8 +51,8 @@ Primary.args = {
         style: {
           color: '#ccc',
           fontWeight: 'bold',
-        }
-      }
+        },
+      },
     },
     axes: {
       topVertical: {
@@ -61,11 +64,11 @@ Primary.args = {
           stroke: 'red',
           strokeWidth: 0.5,
         },
-        formatter: (value) =>  value
-      }
+        formatter: (value) => value,
+      },
     },
     seriesData: [
       // line:
-    ]
-  }
-}
+    ],
+  },
+};

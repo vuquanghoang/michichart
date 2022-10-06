@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Story, Meta } from '@storybook/react';
 import { HorizontalBarChart, HorizontalBarChartProps } from "./index";
 import defaultModeData from './mockData/normal-mode.json';
@@ -10,6 +10,7 @@ export default {
 
 const Template: Story<HorizontalBarChartProps> = (args) => <HorizontalBarChart {...args} />;
 export const Primary = Template.bind({});
+
 Primary.args = {
   className: '',
   seriesData: defaultModeData,
@@ -27,16 +28,19 @@ Primary.args = {
   showAxisY: true,
   direction: 'ltr',
   conf: {
+    // @ts-ignore
     tooltipContent: ({item, series}) => {
-      console.log(series)
       return `<div>${JSON.stringify(item)}</div>`
     },
     axes: {
       y: {
+        // @ts-ignore
         formatter: (value) =>  value,
       },
       x: {
+        // @ts-ignore
         formatter: (value) => value,
+        // @ts-ignore
         tickComponent: (value) => {
           return `<tspan x=${value.x} y=${value.y}>${value.formattedValue}</tspan>`
         }

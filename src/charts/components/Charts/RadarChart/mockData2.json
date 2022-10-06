@@ -1,136 +1,331 @@
 [
   {
-    "label": "All Africa",
+    "label": "China",
     "color": "#1F77B4",
     "data": [
       {
-        "region_j": "1001",
-        "value": "707.2",
+        "partner": "156",
+        "value": "120",
         "date": "Jan"
       },
       {
-        "region_j": "1001",
-        "value": "721.344",
+        "partner": "156",
+        "value": "84",
         "date": "Feb"
       },
       {
-        "region_j": "1001",
-        "value": "735.77088",
+        "partner": "156",
+        "value": "86",
         "date": "Mar"
       },
       {
-        "region_j": "1001",
-        "value": "750.4862976",
+        "partner": "156",
+        "value": "66",
         "date": "Apr"
       },
       {
-        "region_j": "1001",
-        "value": "765.4960236",
+        "partner": "156",
+        "value": "170",
         "date": "May"
       },
       {
-        "region_j": "1001",
-        "value": "780.805944",
+        "partner": "156",
+        "value": "80",
         "date": "Jun"
       },
       {
-        "region_j": "1001",
-        "value": "796.4220629",
+        "partner": "156",
+        "value": "132",
         "date": "Jul"
       },
       {
-        "region_j": "1001",
-        "value": "812.3505042",
+        "partner": "156",
+        "value": "85",
         "date": "Aug"
       },
       {
-        "region_j": "1001",
-        "value": "828.5975142",
+        "partner": "156",
+        "value": "102",
         "date": "Sep"
       },
       {
-        "region_j": "1001",
-        "value": "845.1694645",
+        "partner": "156",
+        "value": "113",
         "date": "Oct"
       },
       {
-        "region_j": "1001",
-        "value": "862.0728538",
+        "partner": "156",
+        "value": "105",
         "date": "Nov"
       },
       {
-        "region_j": "1001",
-        "value": "832",
+        "partner": "156",
+        "value": "86",
         "date": "Dec"
       }
     ],
-    "partner": "1001"
+    "partner": "156"
   },
   {
-    "label": "Rest of the world",
+    "label": "United States of America",
+    "color": "#9467BD",
+    "data": [
+      {
+        "value": null,
+        "date": "Jan"
+      },
+      {
+        "partner": "842",
+        "value": "0",
+        "date": "Feb"
+      },
+      {
+        "value": null,
+        "date": "Mar"
+      },
+      {
+        "partner": "842",
+        "value": "1",
+        "date": "Apr"
+      },
+      {
+        "value": null,
+        "date": "May"
+      },
+      {
+        "partner": "842",
+        "value": "2",
+        "date": "Jun"
+      },
+      {
+        "value": null,
+        "date": "Jul"
+      },
+      {
+        "partner": "842",
+        "value": "0",
+        "date": "Aug"
+      },
+      {
+        "value": null,
+        "date": "Sep"
+      },
+      {
+        "partner": "842",
+        "value": "1",
+        "date": "Oct"
+      },
+      {
+        "value": null,
+        "date": "Nov"
+      },
+      {
+        "partner": "842",
+        "value": "1",
+        "date": "Dec"
+      }
+    ],
+    "partner": "842"
+  },
+  {
+    "label": "Germany",
+    "color": "#FF7F0E",
+    "data": [
+      {
+        "partner": "276",
+        "value": "5",
+        "date": "Jan"
+      },
+      {
+        "partner": "276",
+        "value": "4",
+        "date": "Feb"
+      },
+      {
+        "partner": "276",
+        "value": "2",
+        "date": "Mar"
+      },
+      {
+        "partner": "276",
+        "value": "3",
+        "date": "Apr"
+      },
+      {
+        "partner": "276",
+        "value": "3",
+        "date": "May"
+      },
+      {
+        "partner": "276",
+        "value": "2",
+        "date": "Jun"
+      },
+      {
+        "partner": "276",
+        "value": "1",
+        "date": "Jul"
+      },
+      {
+        "partner": "276",
+        "value": "6",
+        "date": "Aug"
+      },
+      {
+        "partner": "276",
+        "value": "1",
+        "date": "Sep"
+      },
+      {
+        "partner": "276",
+        "value": "5",
+        "date": "Oct"
+      },
+      {
+        "partner": "276",
+        "value": "2",
+        "date": "Nov"
+      },
+      {
+        "partner": "276",
+        "value": "4",
+        "date": "Dec"
+      }
+    ],
+    "partner": "276"
+  },
+  {
+    "label": "United Arab Emirates",
+    "color": "#D62728",
+    "data": [
+      {
+        "partner": "784",
+        "value": "235",
+        "date": "Jan"
+      },
+      {
+        "partner": "784",
+        "value": "245",
+        "date": "Feb"
+      },
+      {
+        "partner": "784",
+        "value": "284",
+        "date": "Mar"
+      },
+      {
+        "partner": "784",
+        "value": "259",
+        "date": "Apr"
+      },
+      {
+        "partner": "784",
+        "value": "484",
+        "date": "May"
+      },
+      {
+        "partner": "784",
+        "value": "221",
+        "date": "Jun"
+      },
+      {
+        "partner": "784",
+        "value": "285",
+        "date": "Jul"
+      },
+      {
+        "partner": "784",
+        "value": "332",
+        "date": "Aug"
+      },
+      {
+        "partner": "784",
+        "value": "217",
+        "date": "Sep"
+      },
+      {
+        "partner": "784",
+        "value": "276",
+        "date": "Oct"
+      },
+      {
+        "partner": "784",
+        "value": "278",
+        "date": "Nov"
+      },
+      {
+        "partner": "784",
+        "value": "250",
+        "date": "Dec"
+      }
+    ],
+    "partner": "784"
+  },
+  {
+    "label": "France",
     "color": "#17BECF",
     "data": [
       {
-        "region_j": "1002",
-        "value": "734.672",
+        "partner": "251",
+        "value": "947",
         "date": "Jan"
       },
       {
-        "region_j": "1002",
-        "value": "749.36544",
+        "partner": "251",
+        "value": "793",
         "date": "Feb"
       },
       {
-        "region_j": "1002",
-        "value": "764.3527488",
+        "partner": "251",
+        "value": "738",
         "date": "Mar"
       },
       {
-        "region_j": "1002",
-        "value": "779.6398038",
+        "partner": "251",
+        "value": "1066",
         "date": "Apr"
       },
       {
-        "region_j": "1002",
-        "value": "795.2325999",
+        "partner": "251",
+        "value": "2317",
         "date": "May"
       },
       {
-        "region_j": "1002",
-        "value": "811.1372518",
+        "partner": "251",
+        "value": "1947",
         "date": "Jun"
       },
       {
-        "region_j": "1002",
-        "value": "827.3599969",
+        "partner": "251",
+        "value": "2117",
         "date": "Jul"
       },
       {
-        "region_j": "1002",
-        "value": "843.9071968",
+        "partner": "251",
+        "value": "1343",
         "date": "Aug"
       },
       {
-        "region_j": "1002",
-        "value": "860.7853408",
+        "partner": "251",
+        "value": "808",
         "date": "Sep"
       },
       {
-        "region_j": "1002",
-        "value": "878.0010476",
+        "partner": "251",
+        "value": "1093",
         "date": "Oct"
       },
       {
-        "region_j": "1002",
-        "value": "895.5610685",
+        "partner": "251",
+        "value": "920",
         "date": "Nov"
       },
       {
-        "region_j": "1002",
-        "value": "1614.041341",
+        "partner": "251",
+        "value": "630",
         "date": "Dec"
       }
     ],
-    "partner": "1002"
+    "partner": "251"
   }
 ]

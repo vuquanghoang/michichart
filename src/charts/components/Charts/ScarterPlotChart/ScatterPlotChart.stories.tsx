@@ -1,6 +1,6 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
-import { ScatterPlotChart, ScatterPlotChartProps } from './index';
+import { IData, ScatterPlotChart, ScatterPlotChartProps } from './index';
 import mockData from './mockData3.json';
 
 export default {
@@ -11,6 +11,8 @@ export default {
 const Template: Story<ScatterPlotChartProps> = (args) => <ScatterPlotChart {...args} />;
 
 export const Primary = Template.bind({});
+
+// @ts-ignore
 Primary.args = {
   className: '',
   seriesData: mockData,
@@ -37,19 +39,23 @@ Primary.args = {
   tooltip: null,
   tooltipDefaultStyle: true,
   conf: {
+    // @ts-ignore
     tooltipContent: ({item, series}) => `<div>${ new Intl.NumberFormat('en-GB', {
       notation: "compact",
       compactDisplay: "short"
     }).format(item.d)}</div>`,
     axes: {
       y: {
+        // @ts-ignore
         formatter: (value) =>  {
           return new Intl.NumberFormat('en-US', { notation: "compact",
             compactDisplay: "short"}).format(value)
         },
       },
       x: {
+        // @ts-ignore
         formatter: (value) => value,
+        // @ts-ignore
         tickComponent: (value) => {
           return `<tspan x=${value.x} y=${value.y}>${value.formattedValue}</tspan>`
         }
@@ -59,6 +65,7 @@ Primary.args = {
       isEnabled: true,
       content: '',
       value: {
+        // @ts-ignore
         formatter: (value) => value
       }
     }

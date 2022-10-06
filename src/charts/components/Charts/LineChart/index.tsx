@@ -119,10 +119,10 @@ export const LineChart: FC<LineChartProps> = ({
   const getX = (d: DateValue) => d.date;
   const getY = (d: DateValue) => d.value;
 
-  const yAxisValues = series.reduce((result: number[], cur: any) => [...result, ...cur.data.map((d) => d?.value)], []);
+  const yAxisValues = series.reduce((result: number[], cur: any) => [...result, ...cur.data.map((d: { value: any; }) => d?.value)], []);
 
   const xAxisValues = Array.from(
-    new Set(series.reduce((result: any[], cur: any) => [...result, ...cur.data.map((d) => d?.date)], [])),
+    new Set(series.reduce((result: any[], cur: any) => [...result, ...cur.data.map((d: { date: any; }) => d?.date)], [])),
   ).sort();
 
   const xScale = scaleBand<number>({
@@ -132,7 +132,7 @@ export const LineChart: FC<LineChartProps> = ({
     padding: 0.1,
   });
 
-  const maxY = Math.max(...yAxisValues.map((d) => Math.abs(d)));
+  const maxY = Math.max(...yAxisValues.map((d: number) => Math.abs(d)));
 
   const yScale = scaleLinear<number>({
     domain: domainAxisY || (hideNegativeAxisY ? [0, maxY] : [maxY * -1, maxY]),
@@ -146,7 +146,7 @@ export const LineChart: FC<LineChartProps> = ({
   xScale.range([refinedPadding.left, width - refinedPadding.right]);
   yScale.range([height - 50, 50]);
 
-  const highlight = (node, index) => {
+  const highlight = (node: any, index: number) => {
     const root = node.closest('svg');
 
     select(node.parentNode).raise();
@@ -154,9 +154,10 @@ export const LineChart: FC<LineChartProps> = ({
     Array.from(root.querySelectorAll(`.data-point-${index}`)).forEach(el => (el as HTMLElement).classList.add(CLASS_NAME.HIGHLIGHT));
   };
 
-  const resetHighlight = (node) => {
+  const resetHighlight = (node: HTMLElement) => {
     const root = node.closest('svg');
 
+    // @ts-ignore
     Array.from(root.querySelectorAll('.data-point')).forEach(el => (el as HTMLElement).classList.remove(CLASS_NAME.HIGHLIGHT));
   };
 
@@ -216,7 +217,7 @@ export const LineChart: FC<LineChartProps> = ({
                   const { formattedValue, ...otherProps } = v;
                   return <text {...otherProps}>{formattedValue}</text>;
                 }
-                return <text dangerouslySetInnerHTML={{__html: conf?.axes?.y?.tickComponent(v)}}/>
+                return conf?.axes?.y?.tickComponent(v);
               }}
             />
           )}
@@ -234,7 +235,7 @@ export const LineChart: FC<LineChartProps> = ({
                   const { formattedValue, ...otherProps } = v;
                   return <text {...otherProps}>{formattedValue}</text>;
                 }
-                return <text dangerouslySetInnerHTML={{__html: conf?.axes?.x?.tickComponent(v)}}/>
+                return conf?.axes?.x?.tickComponent(v);
               }}
               tickFormat={(v) => conf?.axes?.x?.formatter ? conf?.axes?.x?.formatter(v) : v}
             />
@@ -271,7 +272,7 @@ export const LineChart: FC<LineChartProps> = ({
         {series &&
           series.map(({ data, label }, i) => (
             <g key={`g-segment-${i}`}>
-              {data.map((dp, j) => (
+              {data.map((dp: DateValue, j: any) => (
                 <g
                   key={`g-${i}&${j}`}
                   style={{
@@ -327,7 +328,7 @@ export const LineChart: FC<LineChartProps> = ({
           left={tooltipLeft}
           style={{ ...defaultStyles, boxShadow: 'none', padding: 0 }}
         >
-          <div dangerouslySetInnerHTML={{ __html: conf.tooltipContent(tooltipData) }} />
+          {conf.tooltipContent(tooltipData)}
         </TooltipInPortal>
       )}
     </Styled>

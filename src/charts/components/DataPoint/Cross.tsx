@@ -1,5 +1,6 @@
 import React from "react";
 
+// @ts-ignore
 const Cross = ({x, y, size, strokeWidth, color, ...otherProps}) => {
   const roundedX = parseInt(x);
   const roundedY = parseInt(y);

@@ -32,7 +32,6 @@ Primary.args = {
   minifyAxisY: true,
   conf: {
     tooltipContent: ({label, date, value, series}) => {
-      console.log(series)
       return `<div>${label}</div><div>${date}: ${value}</div>`
     },
     axes: {

@@ -4,7 +4,7 @@ import { scaleLinear, scaleQuantile } from '@visx/scale';
 import { extent } from 'd3-array';
 import orderBy from 'lodash/orderBy';
 import { GridColumns, GridRows } from '@visx/grid';
-import { defaultStyles, useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import { defaultStyles, useTooltip, useTooltipInPortal, Tooltip } from '@visx/tooltip';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { localPoint } from '@visx/event';
 import { Label, TickPlain } from '../../Axes';
@@ -58,7 +58,7 @@ const LegendText = styled.div`
   transform: translateY(50%);
 `;
 
-interface IData {
+export interface IData {
   label: string;
   x: number;
   y: number;
@@ -71,7 +71,7 @@ let tooltipTimeout: number;
 
 export interface ScatterPlotChartProps {
   className: string;
-  seriesData: IData[];
+  seriesData: IData[] | any[];
   width: number;
   height: number;
   padding: {
@@ -89,6 +89,8 @@ export interface ScatterPlotChartProps {
   tickFormat: { value: string; valueSize?: string; date: string; currency?: string; scale?: string };
   legendTitle?: string | ReactNode | null;
   conf?: any;
+  tooltip?: ReactNode | null;
+  tooltipDefaultStyle?: boolean;
 }
 
 export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
@@ -113,10 +115,6 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
                                                             }) => {
   const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
     useTooltip<TooltipContentProps>();
-  const { containerRef, TooltipInPortal } = useTooltipInPortal({
-    scroll: true,
-    detectBounds: true,
-  });
 
   const diameterScale = scaleQuantile({
     domain: extent(seriesData.map(({ d }) => d)) as unknown as [number, number],
@@ -142,7 +140,7 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
 
   return (
     <Styled>
-      <svg className={className} width={width} height={height} ref={containerRef} style={{ overflow: 'visible' }}>
+      <svg className={className} width={width} height={height} style={{ overflow: 'visible' }}>
         <rect x={0} y={0} width={width} height={height} fill="#fff" />
         {axisYLbl && (
           <Label x={5} y={25}>
@@ -283,13 +281,13 @@ export const ScatterPlotChart: FC<ScatterPlotChartProps> = ({
         )}
       </svg>
       {tooltipOpen && tooltipData && conf?.tooltipContent && (
-        <TooltipInPortal
+        <Tooltip
           top={tooltipTop}
           left={tooltipLeft}
           style={{ ...defaultStyles, boxShadow: 'none', padding: 0 }}
         >
-          <div dangerouslySetInnerHTML={{ __html: conf ? conf?.tooltipContent(tooltipData) : '' }} />
-        </TooltipInPortal>
+          {conf.tooltipContent(tooltipData)}
+        </Tooltip>
       )}
     </Styled>
   );

@@ -1,0 +1,14 @@
+[
+  {
+    "label": "Africa",
+    "date": "2021",
+    "MFN": 0.5,
+    "ATR": 0.4
+  },
+  {
+    "label": "North Africa",
+    "date": "2021",
+    "MFN": 0.3,
+    "ATR": 0.9
+  }
+]

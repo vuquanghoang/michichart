@@ -42,7 +42,7 @@ const Stack: ({
 
   const stackData = series
     .find((d) => d.key === dataKey)
-    ?.data?.find((d) => +d.date === +date);
+    ?.data?.find((d: { date: string | number; }) => +d.date === +date);
 
   if (!stackData) return null;
 
@@ -73,11 +73,13 @@ const Stack: ({
             .map((k, i) => {
               const h = (stackData[k] * containerHeight) / value;
               top += h;
+
               return (
                 <div
                   key={`sd-${i}`}
                   style={{
                     height: h - 1,
+                    // @ts-ignore
                     backgroundColor: colors[k] || colorsDefault[i],
                   }}
                 />

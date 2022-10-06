@@ -107,9 +107,9 @@ export const BarBellChart: FC<BarBellChartProps> = ({
   const disabledItems = conf?.disabledItems ? conf?.disabledItems : [];
   const colors = conf.colors || [];
 
-  const xAxisKeys = Array.from(new Set(series.reduce((result: number[], cur: any) => [...result, ...cur.data.map(d => Math.ceil(d?.date))], [])));
-  const xAxisValuesFlatten = series.reduce((result: number[], cur: any) => [...result, ...cur.data.map(d => ({ [d.date]: Math.ceil(d?.value) }))], []);
-  const xAxisValuesFlatten1 = series.reduce((result: number[], cur: any) => [...result, ...cur.data.map(d => ({
+  const xAxisKeys = Array.from(new Set(series.reduce((result: number[], cur: any) => [...result, ...cur.data.map((d: { date: number; }) => Math.ceil(d?.date))], [])));
+  const xAxisValuesFlatten = series.reduce((result: number[], cur: any) => [...result, ...cur.data.map((d: { date: any; value: number; }) => ({ [d.date]: Math.ceil(d?.value) }))], []);
+  const xAxisValuesFlatten1 = series.reduce((result: number[], cur: any) => [...result, ...cur.data.map((d: { date: any; value: number; }) => ({
     date: d.date,
     [cur.label]: Math.ceil(d?.value)
   }))
@@ -124,7 +124,7 @@ export const BarBellChart: FC<BarBellChartProps> = ({
       ...result,
       {
         date: Object.keys(cur)[0],
-        ...xAxisValuesFlatten1.filter(d => d.date === Object.values(cur)[0]).reduce((r, c) => ({ ...r, ...c }), {})
+        ...xAxisValuesFlatten1.filter((d: { date: unknown; }) => d.date === Object.values(cur)[0]).reduce((r: any, c: any) => ({ ...r, ...c }), {})
       }
     ];
 
@@ -138,7 +138,7 @@ export const BarBellChart: FC<BarBellChartProps> = ({
 
     return {
       ...result,
-      [Object.keys(cur)[0]]: (xAxisValuesFlatten.filter(d => {
+      [Object.keys(cur)[0]]: (xAxisValuesFlatten.filter((d: {}) => {
         return Object.keys(d)[0] === Object.keys(cur)[0];
       })).reduce((sum: number, d: object) => sum + parseFloat(Object.values(d)[0]), 0)
     };
@@ -146,14 +146,15 @@ export const BarBellChart: FC<BarBellChartProps> = ({
 
   const xScale = scaleLinear<number>({
     // @ts-ignore
-    domain: [Math.min(...xAxisValues), Math.max(...xAxisValues)],
+    domain: [Math.min(...xAxisValues), Math.max(...xAxisValues) * 1.2],
     zero: true,
     nice: true,
-    clamp: true
   });
 
+
+
   const yAxisValues = Array.from(
-    new Set(series.reduce((result: any[], cur: any) => [...result, ...cur.data.map((d) => parseInt(d?.date))], []))
+    new Set(series.reduce((result: any[], cur: any) => [...result, ...cur.data.map((d: { date: string; }) => parseInt(d?.date))], []))
   )
     .sort();
 
@@ -161,11 +162,12 @@ export const BarBellChart: FC<BarBellChartProps> = ({
     domain: yAxisValues,
     paddingOuter: 0,
     paddingInner: 0,
-    padding: 0.1
+    padding: 0.1,
+
   });
 
-  xScale.range([padding.left, width - padding.right]);
-  yScale.range([padding.bottom, height]);
+  xScale.range([padding.left, width + padding.right]);
+  yScale.range([padding.bottom, height - padding.bottom]);
 
   const colorScale = scaleOrdinal<string, string>({
     domain: colors.map(d => Object.keys(d)[0]),
@@ -215,7 +217,7 @@ export const BarBellChart: FC<BarBellChartProps> = ({
               const { formattedValue, ...otherProps } = v;
               return <text {...otherProps}>{formattedValue}</text>;
             }
-            return <text dangerouslySetInnerHTML={{__html: conf?.axes?.x?.tickComponent(v)}}/>
+            return conf?.axes?.x?.tickComponent(v);
           }}
           tickFormat={(v) => conf?.axes?.x?.formatter ? conf?.axes?.x?.formatter(v) : v}
         />
@@ -233,7 +235,7 @@ export const BarBellChart: FC<BarBellChartProps> = ({
               const { formattedValue, ...otherProps } = v;
               return <text {...otherProps}>{formattedValue}</text>;
             }
-            return <text dangerouslySetInnerHTML={{__html: conf?.axes?.y?.tickComponent(v)}}/>
+            return conf?.axes?.y?.tickComponent(v);
           }}
         />
 
@@ -295,7 +297,7 @@ export const BarBellChart: FC<BarBellChartProps> = ({
           style={{ ...defaultStyles, boxShadow: 'none', padding: 0 }}
         >
           {/*// @ts-ignore*/}
-          <div dangerouslySetInnerHTML={{ __html: conf?.tooltipContent(tooltipData) }} />
+          {conf.tooltipContent(tooltipData)}
         </TooltipInPortal>
       )}
     </Styled>

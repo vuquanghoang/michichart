@@ -12,6 +12,7 @@ import { Label } from '../../Axes';
 import { TooltipContentProps } from '../../Tooltips/ToolipContent';
 import { extent } from 'd3-array';
 import sum from 'lodash/sum';
+import { SeriesPoint } from 'd3-shape';
 
 const Styled = styled.div`
   contain: layout;
@@ -80,24 +81,24 @@ export interface AreaChartProps {
 
 
 export const AreaChart: FC<AreaChartProps> = ({
-  className = '',
-  width = 900,
-  height = 500,
-  seriesData = [],
-  padding = {},
-  domainAxisY = null,
-  domainAxisX = null,
-  title = '',
-  showAxisX = true,
-  showAxisY = true,
-  tickFormat = {
-    ...defaultConfig.tickFormat,
-    value: '{v}%',
-  },
-  dataKeys = [],
-  colors = {},
-  conf = {},
-}) => {
+                                                className = '',
+                                                width = 900,
+                                                height = 500,
+                                                seriesData = [],
+                                                padding = {},
+                                                domainAxisY = null,
+                                                domainAxisX = null,
+                                                title = '',
+                                                showAxisX = true,
+                                                showAxisY = true,
+                                                tickFormat = {
+                                                  ...defaultConfig.tickFormat,
+                                                  value: '{v}%',
+                                                },
+                                                dataKeys = [],
+                                                colors = {},
+                                                conf = {},
+                                              }) => {
   const config = {
     padding: {
       ...defaultConfig.padding,
@@ -112,9 +113,10 @@ export const AreaChart: FC<AreaChartProps> = ({
     detectBounds: true,
   });
 
-  const getDate = (d) => d.data.date;
+  const getDate = (d: SeriesPoint<Record<string, any>>) => d.data.date;
+  // @ts-ignore
   const getY0 = (d) => d[0];
-  const getY1 = (d) => d[1];
+  const getY1 = (d: any[]) => d[1];
   const xAxisValues = seriesData.map((d) => d.date);
   const yAxisValues = seriesData
     .map((d) => {
@@ -125,7 +127,7 @@ export const AreaChart: FC<AreaChartProps> = ({
     .reduce((r, cur) => [...r, sum(cur)], []);
 
 
-  const highlightArea = (e, key) => {
+  const highlightArea = (e: any, key: string) => {
     const parentNode: HTMLElement = e.target.parentNode as HTMLElement;
     const areas: NodeListOf<SVGPathElement> = parentNode.querySelectorAll('path');
     const dataPointsGroups: NodeListOf<SVGCircleElement> = parentNode.querySelectorAll('.data-points');
@@ -149,7 +151,7 @@ export const AreaChart: FC<AreaChartProps> = ({
     });
   };
 
-  const resetHighlightArea = (e) => {
+  const resetHighlightArea = (e: any) => {
     const svgEl = e.currentTarget as SVGElement;
 
     Array.from(svgEl.querySelectorAll('.area-data')).forEach((area) => {
@@ -169,7 +171,9 @@ export const AreaChart: FC<AreaChartProps> = ({
     range: [config.padding.left, width - config.padding.right],
   });
 
+
   const yScale = scaleLinear<number>({
+    // @ts-ignore
     domain: extent(domainAxisY || yAxisValues),
     zero: true,
     nice: true,
@@ -204,7 +208,7 @@ export const AreaChart: FC<AreaChartProps> = ({
                 const { formattedValue, ...otherProps } = v;
                 return <text {...otherProps}>{formattedValue}</text>;
               }
-              return <text dangerouslySetInnerHTML={{__html: conf?.axes?.y?.tickComponent(v)}}/>
+              return conf?.axes?.y?.tickComponent(v)
             }
             }
           />
@@ -221,7 +225,7 @@ export const AreaChart: FC<AreaChartProps> = ({
                 const { formattedValue, ...otherProps } = v;
                 return <text {...otherProps}>{formattedValue}</text>;
               }
-              return <text dangerouslySetInnerHTML={{__html: conf?.axes?.x?.tickComponent(v)}}/>
+              return conf?.axes?.x?.tickComponent(v)
             }}
             tickFormat={(v) => conf?.axes?.x?.formatter ? conf?.axes?.x?.formatter(v) : v}
           />
@@ -310,7 +314,7 @@ export const AreaChart: FC<AreaChartProps> = ({
           left={tooltipLeft}
           style={{ ...defaultStyles, boxShadow: 'none', padding: 0 }}
         >
-          <div dangerouslySetInnerHTML={{ __html: conf?.tooltipContent(tooltipData) }} />
+          {conf.tooltipContent(tooltipData)}
         </TooltipInPortal>
       )}
     </Styled>

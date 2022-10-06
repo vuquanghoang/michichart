@@ -1,42 +1,22 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "baseUrl": "",
-    "rootDir": "./",
-    "outDir": "lib",
-    "lib": [
-      "es6",
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "declaration": true,
-    "declarationDir": "lib",
+    "target": "es2016",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-//    "esModuleInterop": false,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
+    "noFallthroughCasesInSwitch": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react"
+    "jsx": "react-jsx",
+    "baseUrl": "src",
+    "noUnusedLocals": false
   },
-  "paths": {
-    "modules": ["./src/charts"],
-    "themes/*": ["./src/themes"],
-//    "mockData": ["./src/mockData"]
-  },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "lib",
-    "stories"
-  ]
+  "include": ["src"]
 }

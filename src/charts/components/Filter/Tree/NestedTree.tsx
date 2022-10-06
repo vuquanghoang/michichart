@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { BranchStyled, NodeStyled } from './Styled';
 import intersection from 'lodash/intersection';
 import flattenDeep from 'lodash/flattenDeep';

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, Fragment } from 'react';
 import { Group } from '@visx/group';
 import { BarGroup } from '@visx/shape';
 import { AxisBottom, AxisLeft } from '@visx/axis';
@@ -9,13 +9,11 @@ import { localPoint } from '@visx/event';
 import { Label } from '../../Axes';
 import colorsDefault from '../../../constants/colors';
 import { TooltipContentProps } from '../../Tooltips/ToolipContent';
-import Stack from './Stack';
 import { defaultConfig } from '../../../helpers';
-import { EventType } from '@visx/event/lib/types';
 
 let tooltipTimeout: number;
 
-export interface VerticalBarChartProps {
+export interface VerticalBarGroupChartProps {
   series: any[];
   seriesTotal: any[];
   title: string | React.ReactNode;
@@ -42,53 +40,50 @@ export interface VerticalBarChartProps {
   conf?: any;
 }
 
-export const VerticalBarChart: FC<VerticalBarChartProps> = ({
-                                                              series = [],
-                                                              seriesTotal = [],
-                                                              title = '',
-                                                              height = defaultConfig.height,
-                                                              width = defaultConfig.width,
-                                                              colors = null,
-                                                              padding = null,
-                                                              domainAxisX = null,
-                                                              domainAxisY = null,
-                                                              showAxisX = true,
-                                                              showAxisY = true,
-                                                              conf = {},
-                                                            }) => {
+export const VerticalBarGroupChart: FC<VerticalBarGroupChartProps> = ({
+  series = [],
+  title = '',
+  height = defaultConfig.height,
+  width = defaultConfig.width,
+  colors = null,
+  padding = null,
+  domainAxisX = null,
+  domainAxisY = null,
+  showAxisX = true,
+  showAxisY = true,
+  conf = {},
+}) => {
   const refinedPadding = padding
     ? {
-      ...defaultConfig.padding,
-      ...padding,
-    }
+        ...defaultConfig.padding,
+        ...padding,
+      }
     : {
-      ...defaultConfig.padding,
-    };
-
-  const filteredSeries = series.filter((d) => d.data.length > 0);
-
-  const keyAbbr = filteredSeries.reduce(
-    (result, d) => ({
-      ...result,
-      [d.key]: d.abbr,
-    }),
-    {},
-  );
-
-  const maxY = Math.max(...seriesTotal.map((d) => Math.max(d?.export || 0, d?.import || 0, d?.trade || 0)));
+        ...defaultConfig.padding,
+      };
 
 
-  const keys = filteredSeries.map((d) => d.key);
+  const yValues = series.map(d =>
+    Object.keys(d).filter(k => k !== "date" && k !== "label").map(k => d[k])).flat();
+
+
+  // @ts-ignore
+  const maxY = Math.max(...yValues);
+
+  const keys = Array.from(new Set(series.map((d) => Object.keys(d).filter((k) => !['date', 'label'].includes(k))).flat()));
 
 
   // accessors
-  const getDate = (d: { date: any; }) => d.date;
+  const getDate = (d: { label: any; }) => d.label;
 
   // scales
+  // @ts-ignore
   const dateScale = scaleBand<string>({
-    domain: domainAxisX || seriesTotal.map(getDate),
+    domain: series.map(d => d.label),
     padding: 0.1,
   });
+
+
 
   const directionScale = scaleBand<string>({
     domain: keys,
@@ -162,7 +157,7 @@ export const VerticalBarChart: FC<VerticalBarChartProps> = ({
         />
         <Group top={refinedPadding.top}>
           <BarGroup
-            data={seriesTotal}
+            data={series}
             keys={keys}
             height={height - 100}
             x0={getDate}
@@ -171,63 +166,40 @@ export const VerticalBarChart: FC<VerticalBarChartProps> = ({
             yScale={objectScale}
             color={colorScale}
           >
-            {(barGroups) =>
-              barGroups.map((barGroup) => (
+            {barGroups =>
+              barGroups.map(barGroup => (
                 <Group key={`bar-group-${barGroup.index}-${barGroup.x0}`} left={barGroup.x0}>
-                  {barGroup.bars.map((bar) => (
-                    <g
-                      x={bar.x}
+                  {barGroup.bars.map(bar => (
+                    <Fragment>
+                    <rect
+                      key={`bar-group-bar-${barGroup.index}-${bar.index}-${bar.value}-${bar.key}`}
+                      x={ bar.x }
                       y={bar.y}
-                      height={bar.height}
                       width={bar.width}
-                      key={`group-${barGroup.index}-${bar.index}`}
-                    >
-                      <Stack
-                        keys={keys}
-                        key={`stack-${barGroup.index}-${bar.index}`}
-                        containerTop={bar.y}
-                        containerLeft={bar.x}
-                        containerHeight={bar.height}
-                        containerWidth={bar.width}
-                        date={seriesTotal[barGroup.index]?.date}
-                        colors={colors}
-                        dataKey={bar.key}
-                        value={bar.value}
-                        onMouseLeave={() => {
-                          tooltipTimeout = window.setTimeout(() => {
-                            hideTooltip();
-                          }, 300);
-                        }}
-                        onMouseMove={(event: Element | EventType) => {
-                          if (barGroup !== undefined) {
-                            if (tooltipTimeout) clearTimeout(tooltipTimeout);
-                            const eventSvgCoords = localPoint(event);
-                            const left = eventSvgCoords ? eventSvgCoords?.x - bar.width / 2 : bar.x;
+                      height={bar.height}
+                      fill={bar.color}
+                      rx={4}
+                      onMouseLeave={() => {
+                        tooltipTimeout = window.setTimeout(() => {
+                          hideTooltip();
+                        }, 100);
+                      }}
+                      onMouseMove={(event) => {
+                        event.preventDefault();
+                        if (tooltipTimeout) clearTimeout(tooltipTimeout);
+                        const eventSvgCoords = localPoint(event);
 
-                            showTooltip({
-                              tooltipData: {
-                                item: {
-                                  label: bar.key,
-                                  date: seriesTotal[barGroup.index]?.date,
-                                  value: bar.value,
-                                },
-                                series: seriesTotal.map((d: any) => ({
-                                  date: d?.date,
-                                  value: parseFloat(d[bar.key]).toFixed(4),
-                                })),
-
-                              },
-                              tooltipTop: eventSvgCoords?.y,
-                              tooltipLeft: left,
-                            });
-                          }
-                        }}
-                        series={filteredSeries}
-                      />
-                      <foreignObject x={bar.x} y={bar.y + bar.height + 5} width={bar.width} height={20}>
-                        <div style={{ textAlign: 'center' }}>{keyAbbr[bar.key]}</div>
-                      </foreignObject>
-                    </g>
+                        showTooltip({
+                          tooltipData: {
+                            item: bar,
+                            series: series,
+                          },
+                          tooltipTop: eventSvgCoords?.y,
+                          tooltipLeft: eventSvgCoords?.x,
+                        });
+                      }}
+                    />
+                    </Fragment>
                   ))}
                 </Group>
               ))
@@ -241,16 +213,19 @@ export const VerticalBarChart: FC<VerticalBarChartProps> = ({
             scale={dateScale}
             stroke="transparent"
             tickStroke="transparent"
-            numTicks={20}
+            // numTicks={20}
             hideAxisLine
             tickComponent={(v) => {
               if (!conf?.axes?.x?.tickComponent) {
                 const { formattedValue, ...otherProps } = v;
                 return <text {...otherProps}>{formattedValue}</text>;
               }
+
               return conf?.axes?.x?.tickComponent(v);
             }}
-            tickFormat={(v) => conf?.axes?.x?.formatter ? conf?.axes?.x?.formatter(v) : v}
+            tickFormat={(v) => {
+              return conf?.axes?.x?.formatter ? conf?.axes?.x?.formatter(v) : v
+            }}
           />
         )}
       </svg>

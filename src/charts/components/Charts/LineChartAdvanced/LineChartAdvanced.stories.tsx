@@ -16,7 +16,7 @@ export const Primary = Template.bind({});
 Primary.args = {
   className: '',
   series1: mockData,
-  series2: mockData2,
+  series2: [],
   // @ts-ignore
   conf: {
     width: 900,
@@ -28,19 +28,8 @@ Primary.args = {
       left: 50,
     },
     axesLabel: {
-      y1: "Percentage 1",
-      y2: "Percentage 2",
-    },
-    scaleFormat:{
-      b: '$ {v}b',
-      m: '$ {v}m',
-      k: '$ {v}k',
-      n: '$ {v}',
-    },
-    isScaled: true,
-    colors: {
-      'All Africa': '#1F77B4',
-      'Central Africa': '#FF7F0E',
+      y1: "National tariff line (%)",
+      y2: "",
     },
     tooltipContent: ({item, series}) => {
       console.log(series)
@@ -55,9 +44,9 @@ Primary.args = {
       },
       x: {
         formatter: (value) => value,
-        tickComponent: (value) => {
-          return `<tspan x=${value.x} y=${value.y}>${value.formattedValue}</tspan>`
-        }
+      /*  tickComponent: (value) => {
+          return <tspan x={value.x} y={value.y}>{value.formattedValue}</tspan>
+        }*/
       }
     },
   }

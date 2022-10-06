@@ -5,55 +5,51 @@
       "visibility": "on",
       "shape": "cross"
     },
-    "label": "EAC",
+    "label": "Average tariff (%)",
     "data": [
       {
         "date": "2009",
-        "value": "15.76"
+        "value": "60"
       },
       {
         "date": "2010",
-        "value": "15.26"
+        "value": "55"
       },
       {
         "date": "2011",
-        "value": "16.44"
+        "value": "59"
       },
       {
         "date": "2012",
-        "value": "12.62"
+        "value": "58"
       },
       {
         "date": "2013",
-        "value": "15.83"
+        "value": "60"
       },
       {
         "date": "2014",
-        "value": "19.18"
+        "value": "60"
       },
       {
         "date": "2015",
-        "value": "19.55"
+        "value": "59.55"
       },
       {
         "date": "2016",
-        "value": "18.41"
+        "value": "58.41"
       },
       {
         "date": "2017",
-        "value": "16.13"
+        "value": "46.13"
       },
       {
         "date": "2018",
-        "value": "15.95"
+        "value": "45.95"
       },
       {
         "date": "2019",
-        "value": "16.24"
-      },
-      {
-        "date": "2020",
-        "value": "13.74"
+        "value": "46.24"
       }
     ]
   },

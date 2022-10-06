@@ -1,130 +1,140 @@
 [
   {
-    "color": "#17BECF",
     "dataPoint": {
       "visibility": "on",
       "shape": "circle"
     },
-    "label": "EAC",
+    "label": "Arrival to Gate",
+    "color": "#1F77B4",
     "data": [
       {
-        "date": "200901",
-        "value": "15.76"
+        "date": "2018",
+        "value": "7.275"
       },
       {
-        "date": "200902",
-        "value": "15.26"
+        "date": "2021",
+        "value": "3"
       },
       {
-        "date": "200903",
-        "value": "16.44"
+        "date": "2020",
+        "value": "4.2"
       },
       {
-        "date": "200904",
-        "value": "12.62"
-      },
-      {
-        "date": "200905",
-        "value": "15.83"
-      },
-      {
-        "date": "200906",
-        "value": "19.18"
-      },
-      {
-        "date": "200907",
-        "value": "19.55"
-      },
-      {
-        "date": "200909",
-        "value": "16.13"
-      },
-      {
-        "date": "200910",
-        "value": "15.95"
-      },
-      {
-        "date": "200911",
-        "value": "16.24"
-      },
-      {
-        "date": "200912",
-        "value": "110"
-      },
-      {
-        "date": "201106",
-        "value": "19.18"
-      },
-      {
-        "date": "201107",
-        "value": "19.55"
-      },
-      {
-        "date": "201109",
-        "value": "16.13"
-      },
-      {
-        "date": "201110",
-        "value": "15.95"
-      },
-      {
-        "date": "201111",
-        "value": "16.24"
-      },
-      {
-        "date": "201112",
-        "value": "110"
+        "date": "2019",
+        "value": "8.22"
       }
     ]
   },
   {
-    "color": "#1F77B4",
     "dataPoint": {
       "visibility": "on",
       "shape": "circle"
     },
-    "label": "Botswana",
+    "label": "Gate to Registration",
+    "color": "#17BECF",
     "data": [
       {
-        "date": "200901",
-        "value": "15.76"
+        "date": "2018",
+        "value": "7.275"
       },
       {
-        "date": "200902",
-        "value": "15.26"
+        "date": "2021",
+        "value": "3"
       },
       {
-        "date": "200903",
-        "value": "16.44"
+        "date": "2020",
+        "value": "4.2"
       },
       {
-        "date": "200904",
-        "value": "12.62"
-      },
-
+        "date": "2019",
+        "value": "8.22"
+      }
+    ]
+  },
+  {
+    "dataPoint": {
+      "visibility": "on",
+      "shape": "circle"
+    },
+    "label": "Registration to Assessment",
+    "color": "#FF7F0E",
+    "data": [
       {
-        "date": "200906",
-        "value": "19.18"
-      },
-      {
-        "date": "200907",
-        "value": "19.55"
-      },
-      {
-        "date": "200908",
-        "value": "18.41"
-      },
-      {
-        "date": "200909",
-        "value": "16.13"
+        "date": "2018",
+        "value": 100
       },
       {
-        "date": "200910",
-        "value": "5.95"
+        "date": "2021",
+        "value": 100
       },
       {
-        "date": "200911",
-        "value": "16.24"
+        "date": "2020",
+        "value": 100
+      },
+      {
+        "date": "2019",
+        "value": 100
+      }
+    ]
+  },
+  {
+    "dataPoint": {
+      "visibility": "on",
+      "shape": "circle"
+    },
+    "label": "Assessment to Payment",
+    "color": "#D62728",
+    "data": []
+  },
+  {
+    "dataPoint": {
+      "visibility": "on",
+      "shape": "circle"
+    },
+    "label": "Payment to Clearance",
+    "color": "#9467BD",
+    "data": [
+      {
+        "date": "2018",
+        "value": "7.68072"
+      },
+      {
+        "date": "2021",
+        "value": "3.2352"
+      },
+      {
+        "date": "2020",
+        "value": "4.47048"
+      },
+      {
+        "date": "2019",
+        "value": "8.544576"
+      }
+    ]
+  },
+  {
+    "dataPoint": {
+      "visibility": "on",
+      "shape": "circle"
+    },
+    "label": "Clearance to Exit",
+    "color": "#8C564B",
+    "data": [
+      {
+        "date": "2018",
+        "value": "16.4757777"
+      },
+      {
+        "date": "2021",
+        "value": "8.333784176"
+      },
+      {
+        "date": "2020",
+        "value": "10.3338518"
+      },
+      {
+        "date": "2019",
+        "value": "15.58062216"
       }
     ]
   }

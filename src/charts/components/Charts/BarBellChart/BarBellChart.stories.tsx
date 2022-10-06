@@ -17,7 +17,7 @@ Primary.args = {
   series: mockData,
   // @ts-ignore
   conf: {
-    keys: ["EAC", "Botswana"],
+    keys: mockData.map(d => d.label),
     width: 900,
     height: 500,
     padding: {
@@ -40,17 +40,27 @@ Primary.args = {
       date: "%m-%Y"
     },
     isScaled: true,
-    colors: [
-      { "EAC": "#1F77B4" },
-      { "Botswana": "#FF7F0E" }
-    ],
     tooltipContent: ({item, series}) => `<div>${JSON.stringify(item)}</div>`,
     axes: {
       y: {
-        formatter: (value) =>  {
-          return new Intl.NumberFormat('en-US', { notation: "compact",
-            compactDisplay: "short"}).format(value)
-        },
+        formatter: value => `${value}`,
+        tickComponent: value => (
+          <text>
+            <tspan
+              style={{
+                fontFamily: "var(--font-sans-serif-primary)",
+                fontWeight: 600,
+                fontSize: "0.8em",
+                fill: "#918b86",
+                textAnchor: "middle",
+              }}
+              x={value.x + 20}
+              y={value.y}
+            >
+              {value.formattedValue}
+            </tspan>
+          </text>
+        ),
       },
       x: {
         formatter: (value) => value,

@@ -159,7 +159,7 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
                 const { formattedValue, ...otherProps } = v;
                 return <text {...otherProps}>{formattedValue}</text>;
               }
-              return <text dangerouslySetInnerHTML={{ __html: conf?.axes?.y?.tickComponent(v) }} />;
+              return conf?.axes?.y?.tickComponent(v);
             }}
           />
         )}
@@ -173,7 +173,7 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
                 const { formattedValue, ...otherProps } = v;
                 return <text {...otherProps}>{formattedValue}</text>;
               }
-              return <text dangerouslySetInnerHTML={{ __html: conf?.axes?.x?.tickComponent(v) }} />;
+              return conf?.axes?.x?.tickComponent(v);
             }}
             tickFormat={(v) => conf?.axes?.x?.formatter ? conf?.axes?.x?.formatter(v, xScale.ticks()) : v}
             hideTicks
@@ -258,7 +258,7 @@ export const HorizontalBarChart: FC<HorizontalBarChartProps> = ({
           left={tooltipLeft}
           style={{ ...defaultStyles, boxShadow: 'none', padding: 0 }}
         >
-          <div dangerouslySetInnerHTML={{ __html: conf?.tooltipContent(tooltipData) }} />
+          {conf.tooltipContent(tooltipData)}
         </TooltipInPortal>
       )}
     </Styled>

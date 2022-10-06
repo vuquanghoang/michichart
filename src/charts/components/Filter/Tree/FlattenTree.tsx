@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { NodeStyled } from './Styled';
 
 const Node = ({data, iconCheck, iconUncheck, children, selectedItems, onChange}) => {

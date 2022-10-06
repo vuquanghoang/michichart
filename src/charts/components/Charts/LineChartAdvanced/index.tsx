@@ -109,7 +109,7 @@ export const LineChartAdvanced: FC<LineAndVerticalBarChartProps> = ({
   } : defaultConfig.tickFormat;
 
   const xAxisValues = Array.from(
-    new Set(series1.reduce((result: any[], cur: any) => [...result, ...cur.data.map((d) => d?.date)], [])),
+    new Set(series1.reduce((result: any[], cur: any) => [...result, ...cur.data.map((d: { date: any; }) => d?.date)], [])),
   ).sort();
 
   const xScale = scaleBand<number>({
@@ -120,14 +120,15 @@ export const LineChartAdvanced: FC<LineAndVerticalBarChartProps> = ({
   });
 
 
-  const y1AxisValues = series1.reduce((result: number[], cur: any) => [...result, ...cur.data.map((d) => d?.value)], []);
-  const y2AxisValues = series2.reduce((result: number[], cur: any) => [...result, ...cur.data.map((d) => d?.value)], []);
+  const y1AxisValues = series1.reduce((result: number[], cur: any) => [...result, ...cur.data.map((d: { value: any; }) => d?.value)], []);
+  const y2AxisValues = series2.reduce((result: number[], cur: any) => [...result, ...cur.data.map((d: { value: any; }) => d?.value)], []);
 
-  const maxY1 = Math.max(...y1AxisValues.map((d) => Math.abs(d)));
-  const maxY2 = Math.max(...y2AxisValues.map((d) => Math.abs(d)));
+  const maxY1 = Math.max(...y1AxisValues.map((d: number) => Math.abs(d)));
+  const maxY2 = Math.max(...y2AxisValues.map((d: number) => Math.abs(d)));
 
   const y1Scale = scaleLinear<number>({
-    domain: [0, maxY1],
+    // domain: [0, maxY1],
+    domain: [0, 100],
     zero: true,
     nice: true,
     clamp: true,
@@ -145,7 +146,7 @@ export const LineChartAdvanced: FC<LineAndVerticalBarChartProps> = ({
   y2Scale.range([height - 50, 50]);
 
 
-  const highlight = (node, index) => {
+  const highlight = (node: any, index: any) => {
     select(node.parentNode).raise();
     select(node.parentNode.parentNode).raise();
 
@@ -207,7 +208,7 @@ export const LineChartAdvanced: FC<LineAndVerticalBarChartProps> = ({
               const { formattedValue, ...otherProps } = v;
               return <text {...otherProps}>{formattedValue}</text>;
             }
-            return <text dangerouslySetInnerHTML={{ __html: conf?.axes?.y1?.tickComponent(v) }} />;
+            return conf?.axes?.y1?.tickComponent(v);
           }}
         />
 
@@ -225,7 +226,7 @@ export const LineChartAdvanced: FC<LineAndVerticalBarChartProps> = ({
                 const { formattedValue, ...otherProps } = v;
                 return <text {...otherProps}>{formattedValue}</text>;
               }
-              return <text dangerouslySetInnerHTML={{ __html: conf?.axes?.y2?.tickComponent(v) }} />;
+              return conf?.axes?.y2?.tickComponent(v);
             }}
           />
         )}
@@ -242,7 +243,7 @@ export const LineChartAdvanced: FC<LineAndVerticalBarChartProps> = ({
               const { formattedValue, ...otherProps } = v;
               return <text {...otherProps}>{formattedValue}</text>;
             }
-            return <text dangerouslySetInnerHTML={{ __html: conf?.axes?.x?.tickComponent(v) }} />;
+            return conf?.axes?.x?.tickComponent(v);
           }}
           tickFormat={(v) => conf?.axes?.x?.formatter ? conf?.axes?.x?.formatter(v) : v}
         />
@@ -278,7 +279,7 @@ export const LineChartAdvanced: FC<LineAndVerticalBarChartProps> = ({
                    opacity: disabledItems.includes(label) ? 0 : 1,
                  }}
               >
-                {data.map((dp, j) => (
+                {data.map((dp: DateValue, j: any) => (
                   <g
                     key={`g-${i}&${j}`}
                     style={{
@@ -381,7 +382,7 @@ export const LineChartAdvanced: FC<LineAndVerticalBarChartProps> = ({
                   opacity: disabledItems.includes(label) ? 0 : 1,
                 }}
                 key={`line-path-${i}`}
-                className={`data-segment data-segment-${i}`}
+                className={`data-segment data-segment-series-2 data-segment-${i}`}
                 data={data}
                 data-index={i}
                 // @ts-ignore
@@ -401,7 +402,7 @@ export const LineChartAdvanced: FC<LineAndVerticalBarChartProps> = ({
                    pointerEvents: disabledItems.includes(label) ? 'none' : 'auto',
                    opacity: disabledItems.includes(label) ? 0 : 1,
                  }}>
-                {data.map((dp, j) => (
+                {data.map((dp: DateValue, j: any) => (
                   <g
                     key={`g-${i}&${j}`}
                     style={{
@@ -497,7 +498,7 @@ export const LineChartAdvanced: FC<LineAndVerticalBarChartProps> = ({
           left={tooltipLeft}
           style={{ ...defaultStyles, boxShadow: 'none', padding: 0 }}
         >
-          <div dangerouslySetInnerHTML={{ __html: conf ? conf?.tooltipContent(tooltipData) : '' }} />
+          {conf.tooltipContent(tooltipData)}
         </TooltipInPortal>
       )}
     </Styled>
